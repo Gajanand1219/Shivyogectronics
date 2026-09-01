@@ -335,9 +335,6 @@
 
 
 
-
-
-
 import { useMemo, useState, useEffect } from 'react'
 import products from '../data/products'
 import { filterGroups } from '../data/categories'
@@ -345,6 +342,8 @@ import { waLink, WA_MESSAGES } from '../utils/contact'
 import { useLanguage } from '../context/LanguageContext'
 import { useAdminProducts } from '../context/AdminProductsContext'
 import ProductModal from './ProductModal'
+
+const PRODUCTS_PER_PAGE = 8
 
 function ProductCard({ p, onOpen }) {
   const { t, pick } = useLanguage()
@@ -362,13 +361,13 @@ function ProductCard({ p, onOpen }) {
         flex flex-col
         text-left
         w-full
+        min-w-0
         focus-visible:ring-2
         focus-visible:ring-royal-300
         relative
-        min-w-0
       "
     >
-      {/* NEW / ADMIN BADGE */}
+      {/* NEW BADGE */}
       {p.isAdmin && (
         <span
           className="
@@ -391,7 +390,7 @@ function ProductCard({ p, onOpen }) {
         </span>
       )}
 
-      {/* IMAGE */}
+      {/* PRODUCT IMAGE */}
       <div
         className="
           h-24
@@ -437,7 +436,7 @@ function ProductCard({ p, onOpen }) {
         {p.category}
       </span>
 
-      {/* PRODUCT NAME */}
+      {/* NAME */}
       <h3
         className="
           font-display
@@ -467,7 +466,7 @@ function ProductCard({ p, onOpen }) {
         {desc}
       </p>
 
-      {/* PRICE + AVAILABILITY */}
+      {/* PRICE + AVAILABLE */}
       <div
         className="
           flex
@@ -553,41 +552,90 @@ export default function Products({
   const [query, setQuery] = useState('')
   const [openProduct, setOpenProduct] = useState(null)
 
-  // --------------------------------------------------
-  // VIEW MORE / SHOW LESS
-  // --------------------------------------------------
-  const [showAll, setShowAll] = useState(false)
+  // Number of products currently visible.
+  // Starts with 8.
+  const [visibleCount, setVisibleCount] = useState(
+    PRODUCTS_PER_PAGE
+  )
 
-  // --------------------------------------------------
-  // COMBINE PRODUCTS + ADMIN PRODUCTS
-  // REMOVE DUPLICATES BY ID
+  // =====================================================
+  // COMBINE STATIC + ADMIN PRODUCTS
+  // REMOVE DUPLICATES
   // ADMIN/API VERSION WINS
-  // --------------------------------------------------
+  // =====================================================
   const allProducts = useMemo(() => {
     const productMap = new Map()
 
     products.forEach((product) => {
       if (product?.id) {
-        productMap.set(String(product.id), product)
+        productMap.set(
+          String(product.id),
+          product
+        )
       }
     })
 
     adminProducts.forEach((product) => {
       if (product?.id) {
-        productMap.set(String(product.id), product)
+        productMap.set(
+          String(product.id),
+          product
+        )
       }
     })
 
     return Array.from(productMap.values())
   }, [adminProducts])
 
-  // --------------------------------------------------
-  // SCROLL TO PRODUCTS WHEN CATEGORY CHANGES
-  // --------------------------------------------------
+  // =====================================================
+  // GET ALL CATEGORY OPTIONS
+  // =====================================================
+  const categoryOptions = useMemo(() => {
+    const categories = []
+
+    // Categories coming from categories.js
+    filterGroups.forEach((group) => {
+      if (!group) return
+
+      const category =
+        group.label ||
+        group.name ||
+        group.title ||
+        group.category
+
+      if (
+        category &&
+        !categories.includes(category)
+      ) {
+        categories.push(category)
+      }
+    })
+
+    // Also add categories found directly in products.
+    // This ensures newly added admin categories
+    // also appear in filters.
+    allProducts.forEach((product) => {
+      const category = String(
+        product?.category || ''
+      ).trim()
+
+      if (
+        category &&
+        !categories.includes(category)
+      ) {
+        categories.push(category)
+      }
+    })
+
+    return categories
+  }, [allProducts])
+
+  // =====================================================
+  // WHEN CATEGORY CHANGES
+  // RESET TO FIRST 8
+  // =====================================================
   useEffect(() => {
-    // Whenever category changes,
-    // start from first 8 products again.
-    setShowAll(false)
+    setVisibleCount(PRODUCTS_PER_PAGE)
 
     if (
       activeCategory &&
@@ -604,9 +652,10 @@ export default function Products({
     }
   }, [activeCategory])
 
-  // --------------------------------------------------
+  // =====================================================
   // FILTER PRODUCTS
-  // --------------------------------------------------
+  // SEARCH + CATEGORY
+  // =====================================================
   const filtered = useMemo(() => {
     const selectedCategory = String(
       activeCategory || 'सर्व'
@@ -660,45 +709,88 @@ export default function Products({
     query,
   ])
 
-  // --------------------------------------------------
-  // SHOW ONLY 8 INITIALLY
-  // --------------------------------------------------
+  // =====================================================
+  // VISIBLE PRODUCTS
+  // FIRST 8 → NEXT 8 → NEXT 8...
+  // =====================================================
   const visibleProducts = useMemo(() => {
-    // If search is active,
-    // show all matching search results.
-    if (query.trim()) {
-      return filtered
-    }
-
-    // If SHOW ALL clicked,
-    // show all filtered products.
-    if (showAll) {
-      return filtered
-    }
-
-    // Default = first 8 products
-    return filtered.slice(0, 8)
+    return filtered.slice(
+      0,
+      visibleCount
+    )
   }, [
     filtered,
-    showAll,
-    query,
+    visibleCount,
   ])
 
-  // --------------------------------------------------
-  // WHETHER VIEW MORE BUTTON IS NEEDED
-  // --------------------------------------------------
-  const canShowMore =
-    !query.trim() &&
-    filtered.length > 8
+  // =====================================================
+  // VIEW MORE AVAILABLE?
+  // =====================================================
+  const hasMoreProducts =
+    visibleCount < filtered.length
 
-  // --------------------------------------------------
-  // ACTIVE CATEGORY LABEL
-  // --------------------------------------------------
-  const activeCategoryLabel =
-    activeCategory &&
-    activeCategory !== 'सर्व'
-      ? activeCategory
-      : null
+  // =====================================================
+  // IS SHOW LESS NEEDED?
+  // =====================================================
+  const canShowLess =
+    visibleCount > PRODUCTS_PER_PAGE
+
+  // =====================================================
+  // VIEW MORE
+  // SHOW NEXT 8
+  // =====================================================
+  const handleViewMore = () => {
+    setVisibleCount(
+      (current) =>
+        Math.min(
+          current + PRODUCTS_PER_PAGE,
+          filtered.length
+        )
+    )
+  }
+
+  // =====================================================
+  // VIEW LESS
+  // BACK TO FIRST 8
+  // =====================================================
+  const handleViewLess = () => {
+    setVisibleCount(
+      PRODUCTS_PER_PAGE
+    )
+
+    // Scroll back to products heading
+    setTimeout(() => {
+      document
+        .getElementById('products')
+        ?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        })
+    }, 50)
+  }
+
+  // =====================================================
+  // SEARCH CHANGE
+  // RESET PRODUCT COUNT TO 8
+  // =====================================================
+  const handleSearch = (value) => {
+    setQuery(value)
+    setVisibleCount(
+      PRODUCTS_PER_PAGE
+    )
+  }
+
+  // =====================================================
+  // CATEGORY CHANGE
+  // =====================================================
+  const handleCategoryChange = (
+    category
+  ) => {
+    setActiveCategory(category)
+    setVisibleCount(
+      PRODUCTS_PER_PAGE
+    )
+  }
 
   return (
     <section
@@ -715,9 +807,9 @@ export default function Products({
           md:py-16
         "
       >
-        {/* ==================================================
+        {/* =================================================
             HEADER
-        ================================================== */}
+        ================================================= */}
         <div className="mb-6 md:mb-8">
           <div
             className="
@@ -756,17 +848,19 @@ export default function Products({
                 {t('products_title')}
               </h2>
 
-              {activeCategoryLabel && (
-                <p
-                  className="
-                    text-sm
-                    text-navy-400
-                    mt-1
-                  "
-                >
-                  {activeCategoryLabel}
-                </p>
-              )}
+              {activeCategory &&
+                activeCategory !==
+                  'सर्व' && (
+                  <p
+                    className="
+                      text-sm
+                      text-navy-400
+                      mt-1
+                    "
+                  >
+                    {activeCategory}
+                  </p>
+                )}
             </div>
 
             {/* SEARCH */}
@@ -784,7 +878,6 @@ export default function Products({
                   top-1/2
                   -translate-y-1/2
                   text-navy-400
-                  text-sm
                 "
               >
                 🔍
@@ -793,12 +886,15 @@ export default function Products({
               <input
                 type="text"
                 value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value)
-                  setShowAll(false)
-                }}
+                onChange={(e) =>
+                  handleSearch(
+                    e.target.value
+                  )
+                }
                 placeholder={
-                  t('products_search') ||
+                  t(
+                    'products_search'
+                  ) ||
                   'Search products...'
                 }
                 className="
@@ -823,9 +919,9 @@ export default function Products({
           </div>
         </div>
 
-        {/* ==================================================
-            CATEGORY FILTER
-        ================================================== */}
+        {/* =================================================
+            ALL FILTER OPTIONS
+        ================================================= */}
         <div
           className="
             mb-7
@@ -841,13 +937,14 @@ export default function Products({
               pb-1
             "
           >
-            {/* ALL BUTTON */}
+            {/* ALL */}
             <button
               type="button"
-              onClick={() => {
-                setActiveCategory('सर्व')
-                setShowAll(false)
-              }}
+              onClick={() =>
+                handleCategoryChange(
+                  'सर्व'
+                )
+              }
               className={`
                 px-4
                 py-2
@@ -859,38 +956,33 @@ export default function Products({
                 transition
                 ${
                   !activeCategory ||
-                  activeCategory === 'सर्व'
+                  activeCategory ===
+                    'सर्व'
                     ? 'bg-navy-700 text-white shadow-sm'
                     : 'bg-navy-50 text-navy-600 hover:bg-navy-100'
                 }
               `}
             >
-              {t('products_all') || 'सर्व'}
+              {t('products_all') ||
+                'सर्व'}
             </button>
 
-            {/* CATEGORY BUTTONS */}
-            {filterGroups.map(
-              (group) => {
-                const category =
-                  group.label || group.name
-
-                if (!category) {
-                  return null
-                }
-
+            {/* EVERY CATEGORY */}
+            {categoryOptions.map(
+              (category) => {
                 const isActive =
-                  activeCategory === category
+                  activeCategory ===
+                  category
 
                 return (
                   <button
                     key={category}
                     type="button"
-                    onClick={() => {
-                      setActiveCategory(
+                    onClick={() =>
+                      handleCategoryChange(
                         category
                       )
-                      setShowAll(false)
-                    }}
+                    }
                     className={`
                       px-4
                       py-2
@@ -915,9 +1007,9 @@ export default function Products({
           </div>
         </div>
 
-        {/* ==================================================
+        {/* =================================================
             PRODUCT COUNT
-        ================================================== */}
+        ================================================= */}
         <div
           className="
             flex
@@ -935,39 +1027,41 @@ export default function Products({
           >
             {query.trim()
               ? `${filtered.length} products found`
-              : showAll
-              ? `${filtered.length} products`
-              : `Showing ${Math.min(
-                  8,
+              : `Showing ${
+                  visibleProducts.length
+                } of ${
                   filtered.length
-                )} of ${filtered.length}`}
+                } products`}
           </p>
 
-          {showAll &&
-            !query.trim() &&
-            filtered.length > 8 && (
-              <button
-                type="button"
-                onClick={() =>
-                  setShowAll(false)
-                }
+          {/* ACTIVE FILTER */}
+          {activeCategory &&
+            activeCategory !==
+              'सर्व' && (
+              <span
                 className="
-                  text-xs
-                  sm:text-sm
-                  font-semibold
+                  hidden
+                  sm:inline-flex
+                  items-center
+                  px-3
+                  py-1
+                  rounded-full
+                  bg-royal-50
                   text-royal-600
-                  hover:text-royal-700
+                  text-xs
+                  font-semibold
                 "
               >
-                Show Less
-              </button>
+                {activeCategory}
+              </span>
             )}
         </div>
 
-        {/* ==================================================
-            PRODUCTS GRID
-        ================================================== */}
-        {visibleProducts.length > 0 ? (
+        {/* =================================================
+            PRODUCT GRID
+        ================================================= */}
+        {visibleProducts.length >
+        0 ? (
           <div
             className="
               grid
@@ -984,15 +1078,15 @@ export default function Products({
                 <ProductCard
                   key={product.id}
                   p={product}
-                  onOpen={setOpenProduct}
+                  onOpen={
+                    setOpenProduct
+                  }
                 />
               )
             )}
           </div>
         ) : (
-          /* ==================================================
-             NO PRODUCTS
-          ================================================== */
+          /* NO PRODUCTS */
           <div
             className="
               py-16
@@ -1025,63 +1119,68 @@ export default function Products({
                 mt-1
               "
             >
-              Try another search or category.
+              Try another search or
+              category.
             </p>
 
-            {(query ||
-              activeCategory !==
-                'सर्व') && (
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery('')
-                  setActiveCategory(
-                    'सर्व'
-                  )
-                  setShowAll(false)
-                }}
-                className="
-                  mt-4
-                  px-5
-                  py-2
-                  rounded-full
-                  bg-royal-600
-                  text-white
-                  text-sm
-                  font-semibold
-                  hover:bg-royal-700
-                  transition
-                "
-              >
-                Clear Filters
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('')
+                setActiveCategory(
+                  'सर्व'
+                )
+                setVisibleCount(
+                  PRODUCTS_PER_PAGE
+                )
+              }}
+              className="
+                mt-4
+                px-5
+                py-2
+                rounded-full
+                bg-royal-600
+                text-white
+                text-sm
+                font-semibold
+                hover:bg-royal-700
+                transition
+              "
+            >
+              Clear Filters
+            </button>
           </div>
         )}
 
-        {/* ==================================================
-            VIEW MORE / SHOW LESS
-        ================================================== */}
-        {canShowMore && (
+        {/* =================================================
+            VIEW MORE / VIEW LESS
+        ================================================= */}
+        {(hasMoreProducts ||
+          canShowLess) && (
           <div
             className="
               flex
+              flex-col
+              sm:flex-row
+              items-center
               justify-center
+              gap-3
               mt-8
             "
           >
-            {!showAll ? (
+            {/* VIEW MORE */}
+            {hasMoreProducts && (
               <button
                 type="button"
-                onClick={() =>
-                  setShowAll(true)
+                onClick={
+                  handleViewMore
                 }
                 className="
                   inline-flex
                   items-center
                   justify-center
                   gap-2
-                  px-7
+                  px-8
                   py-3
                   rounded-full
                   bg-navy-700
@@ -1099,18 +1198,21 @@ export default function Products({
                   ↓
                 </span>
               </button>
-            ) : (
+            )}
+
+            {/* VIEW LESS */}
+            {canShowLess && (
               <button
                 type="button"
-                onClick={() =>
-                  setShowAll(false)
+                onClick={
+                  handleViewLess
                 }
                 className="
                   inline-flex
                   items-center
                   justify-center
                   gap-2
-                  px-7
+                  px-8
                   py-3
                   rounded-full
                   bg-navy-50
@@ -1123,7 +1225,7 @@ export default function Products({
                   transition
                 "
               >
-                Show Less
+                View Less
                 <span className="text-base">
                   ↑
                 </span>
@@ -1132,9 +1234,9 @@ export default function Products({
           </div>
         )}
 
-        {/* ==================================================
-            WHATSAPP / CONTACT BUTTON
-        ================================================== */}
+        {/* =================================================
+            WHATSAPP
+        ================================================= */}
         <div
           className="
             flex
@@ -1171,9 +1273,9 @@ export default function Products({
         </div>
       </div>
 
-      {/* ==================================================
+      {/* =================================================
           PRODUCT MODAL
-      ================================================== */}
+      ================================================= */}
       {openProduct && (
         <ProductModal
           product={openProduct}
