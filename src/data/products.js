@@ -1,8 +1,8 @@
 const products = [
   {
     "nameMr": "मोबाईल चार्जर",
-    "nameEn": "Mobile Charger",
-    "name": "Mobile Charger",
+    "nameEn": "Mobile Chargers",
+    "name": "Mobile Chargers",
     "category": "Electrical",
     "price": null,
     "descMr": "Safe and quality charger for mobile phones.",
