@@ -1,0 +1,68 @@
+const tips = [
+  {
+    id: 't1',
+    icon: '📐',
+    title: 'घर बांधताना Electrical Planning मध्ये या चुका करू नका',
+    titleEn: "Don't make these mistakes in Electrical Planning while building a house",
+    desc: 'नवीन घर बांधताना योग्य वायर साईज, पुरेसे सॉकेट्स आणि सुरक्षित सर्किट प्लॅनिंग आधीच ठरवणे गरजेचे आहे.',
+    descEn: 'While building a new home, decide the right wire size, enough sockets and safe circuit planning in advance.',
+  },
+  {
+    id: 't2',
+    icon: '⚠️',
+    title: 'Inverter ची वीज घराच्या Socket मध्ये परत देऊ नका',
+    titleEn: "Don't feed inverter power back into a household socket",
+    desc: 'चुकीच्या वायरिंगमुळे लाईनमन व घरातील व्यक्तींना धोका होऊ शकतो — नेहमी योग्य तंत्रज्ञाकडून सेटअप करा.',
+    descEn: 'Wrong wiring can endanger linemen and household members — always get the setup done by a proper technician.',
+  },
+  {
+    id: 't3',
+    icon: '🔌',
+    title: 'योग्य Wire Size आणि MCB Rating का महत्त्वाची?',
+    titleEn: 'Why is the right Wire Size and MCB Rating important?',
+    desc: 'चुकीची वायर साईज व MCB रेटिंग शॉर्ट-सर्किट व आग लागण्याचा धोका वाढवते.',
+    descEn: 'A wrong wire size and MCB rating increases the risk of short-circuit and fire.',
+  },
+  {
+    id: 't4',
+    icon: '🌍',
+    title: 'Earthing आणि RCCB का आवश्यक आहे?',
+    titleEn: 'Why are Earthing and RCCB necessary?',
+    desc: 'योग्य अर्थिंग व RCCB करंट लिकेजपासून कुटुंबाचे संरक्षण करते.',
+    descEn: 'Proper earthing and an RCCB protect your family from current leakage.',
+  },
+  {
+    id: 't5',
+    icon: '🔋',
+    title: 'High-Power उपकरणांसाठी स्वतंत्र Circuit का ठेवावा?',
+    titleEn: 'Why keep a separate circuit for high-power appliances?',
+    desc: 'एसी, गिझर सारख्या उपकरणांसाठी वेगळे सर्किट ठेवल्याने ओव्हरलोडचा धोका टळतो.',
+    descEn: 'Keeping a separate circuit for appliances like AC and geysers avoids the risk of overload.',
+  },
+  {
+    id: 't6',
+    icon: '🔗',
+    title: 'घरासाठी योग्य Extension Board कसा निवडावा?',
+    titleEn: 'How to choose the right Extension Board for your home?',
+    desc: 'योग्य लोड कॅपॅसिटी व सुरक्षा फिचर्स असलेला एक्सटेंशन बोर्ड निवडणे महत्त्वाचे आहे.',
+    descEn: "It's important to choose an extension board with the right load capacity and safety features.",
+  },
+  {
+    id: 't7',
+    icon: '♨️',
+    title: 'Water Heater वापरताना कोणती काळजी घ्यावी?',
+    titleEn: 'What precautions to take while using a Water Heater?',
+    desc: 'गिझर वापरताना योग्य अर्थिंग व नियमित तपासणी अपघात टाळण्यास मदत करते.',
+    descEn: 'Proper earthing and regular checks while using a geyser help avoid accidents.',
+  },
+  {
+    id: 't8',
+    icon: '🪭',
+    title: 'Fan घेताना कोणत्या गोष्टी पाहाव्यात?',
+    titleEn: 'What to check before buying a Fan?',
+    desc: 'हवेचा वेग, वीज वापर, आवाज आणि बॉडी मजबुती या गोष्टी लक्षात घ्या.',
+    descEn: 'Consider air speed, power consumption, noise level and body sturdiness.',
+  },
+]
+
+export default tips

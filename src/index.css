@@ -1,0 +1,230 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+  background-color: #F7F9FC;
+  color: #0B2545;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: #F4B400;
+  color: #0B2545;
+}
+
+/* Section heading eyebrow line */
+.eyebrow {
+  @apply inline-flex items-center gap-2 text-xs md:text-sm font-semibold tracking-wide uppercase text-royal-500;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 22px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #F4B400, #E63946);
+  display: inline-block;
+}
+
+/* Reusable premium card */
+.premium-card {
+  @apply bg-white rounded-2xl shadow-card border border-navy-50 transition-all duration-300;
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -10px rgba(11, 37, 69, 0.3);
+}
+
+/* Glass panel for hero */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Circuit divider signature element */
+.circuit-divider {
+  width: 100%;
+  height: 28px;
+  display: block;
+}
+
+.circuit-divider path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 2.5s ease-out forwards;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hide scrollbar for horizontal chip rows but keep scrollable */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Focus visibility for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #F4B400;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
+
+
+/* ================================
+   CALL BUTTON - FAST TEST ANIMATION
+   ================================ */
+
+.call-float {
+  position: relative;
+  animation: callFloatTest 4s linear infinite !important;
+  box-shadow: 0 0 20px rgba(22, 163, 74, 0.8) !important;
+}
+
+/* Fast pulse ring */
+.call-float::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(22, 163, 74, 0.9);
+  border-radius: 9999px;
+  animation: callPulseTest 5s linear infinite !important;
+}
+
+/* Fast phone shake */
+.call-float i {
+  animation: phoneShakeTest 5s linear infinite !important;
+}
+
+
+/* Button moves up/down + scale */
+@keyframes callFloatTest {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  25% {
+    transform: translateY(-8px) scale(1.15);
+  }
+
+  50% {
+    transform: translateY(0) scale(1);
+  }
+
+  75% {
+    transform: translateY(8px) scale(1.15);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* Very obvious expanding ring */
+@keyframes callPulseTest {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+
+/* Very obvious phone vibration */
+@keyframes phoneShakeTest {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  20% {
+    transform: rotate(20deg);
+  }
+
+  40% {
+    transform: rotate(-20deg);
+  }
+
+  60% {
+    transform: rotate(18deg);
+  }
+}
+
+
+
+
+
+/* Service Enquire Button - Moving Animation */
+.service-enquire-btn {
+  animation: enquireMove 5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes enquireMove {
+  0%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+
+  20% {
+    transform: translateX(3px) scale(1.03);
+  }
+
+  40% {
+    transform: translateX(-3px) scale(1.03);
+  }
+
+  60% {
+    transform: translateX(3px) scale(1.03);
+  }
+
+  80% {
+    transform: translateX(-2px) scale(1);
+  }
+}
+
+/* Touch feedback */
+.service-enquire-btn:active {
+  transform: scale(0.94);
+}
