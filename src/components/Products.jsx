@@ -1234,44 +1234,6 @@ export default function Products({
           </div>
         )}
 
-        {/* =================================================
-            WHATSAPP
-        ================================================= */}
-        <div
-          className="
-            flex
-            justify-center
-            mt-10
-          "
-        >
-          <a
-            href={waLink(
-              WA_MESSAGES.products
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
-              px-6
-              py-3
-              rounded-full
-              bg-green-600
-              text-white
-              text-sm
-              font-semibold
-              hover:bg-green-700
-              transition
-              shadow-sm
-            "
-          >
-            <span>WhatsApp</span>
-            <span>→</span>
-          </a>
-        </div>
-      </div>
 
       {/* =================================================
           PRODUCT MODAL
