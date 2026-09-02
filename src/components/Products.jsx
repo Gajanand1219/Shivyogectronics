@@ -589,46 +589,13 @@ export default function Products({
   // =====================================================
   // GET ALL CATEGORY OPTIONS
   // =====================================================
-  const categoryOptions = useMemo(() => {
-    const categories = []
-
-    // Categories coming from categories.js
-    filterGroups.forEach((group) => {
-      if (!group) return
-
-      const category =
-        group.label ||
-        group.name ||
-        group.title ||
-        group.category
-
-      if (
-        category &&
-        !categories.includes(category)
-      ) {
-        categories.push(category)
-      }
-    })
-
-    // Also add categories found directly in products.
-    // This ensures newly added admin categories
-    // also appear in filters.
-    allProducts.forEach((product) => {
-      const category = String(
-        product?.category || ''
-      ).trim()
-
-      if (
-        category &&
-        !categories.includes(category)
-      ) {
-        categories.push(category)
-      }
-    })
-
-    return categories
-  }, [allProducts])
-
+const categoryOptions = useMemo(() => {
+  return filterGroups.filter(
+    (category) =>
+      category &&
+      category !== 'सर्व'
+  )
+}, [])
   // =====================================================
   // WHEN CATEGORY CHANGES
   // RESET TO FIRST 8
