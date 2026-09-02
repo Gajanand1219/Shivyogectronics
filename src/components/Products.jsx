@@ -334,7 +334,6 @@
 
 
 
-
 import { useMemo, useState, useEffect } from 'react'
 import products from '../data/products'
 import { filterGroups } from '../data/categories'
@@ -1234,6 +1233,13 @@ export default function Products({
           </div>
         )}
 
+        {/* =================================================
+            WHATSAPP
+        ================================================= */}
+       
+       
+      
+      </div>
 
       {/* =================================================
           PRODUCT MODAL
