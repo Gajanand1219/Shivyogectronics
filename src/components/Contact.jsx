@@ -78,7 +78,7 @@ export default function Contact() {
 
   return (
     <section
-       id="contact"
+      id="contact"
       className="relative overflow-hidden bg-gradient-to-br from-navy-50 via-white to-royal-50/50"
     >
       {/* Decorative Background */}
@@ -188,36 +188,57 @@ export default function Contact() {
               ))}
 
             </div>
+{/* Social Media */}
+<div className="mt-5 w-full flex items-center justify-center gap-4
+                px-5 py-4 rounded-2xl
+                bg-gradient-to-r from-green-50 via-pink-50 to-blue-50
+                border border-gray-100 shadow-sm">
 
-            {/* WhatsApp */}
-            <a
-              href={waLink(
-                'नमस्कार, मला तुमच्या दुकानातील उत्पादनांबद्दल माहिती हवी आहे.'
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group mt-4 flex items-center gap-4 p-4 rounded-2xl bg-green-50 border border-green-100 hover:bg-green-500 hover:border-green-500 transition-all duration-300"
-            >
+  {/* WhatsApp */}
+  <a
+    href={waLink(
+      'नमस्कार, मला तुमच्या दुकानातील उत्पादनांबद्दल माहिती हवी आहे.'
+    )}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp"
+    className="group h-14 w-14 flex items-center justify-center rounded-2xl
+               bg-white border border-green-100 shadow-sm
+               hover:bg-green-500 hover:border-green-500 hover:shadow-md
+               transition-all duration-300"
+  >
+    <i className="fa fa-whatsapp text-2xl text-green-500 group-hover:text-white transition"></i>
+  </a>
 
-              <div className="h-11 w-11 shrink-0 rounded-xl bg-green-500 text-white flex items-center justify-center text-xl shadow-md group-hover:bg-white group-hover:text-green-500 transition">
-                <i className="fa fa-whatsapp text-xl"></i>
-              </div>
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/shivyog.electrical/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Instagram"
+    className="group h-14 w-14 flex items-center justify-center rounded-2xl
+               bg-white border border-pink-100 shadow-sm
+               hover:bg-pink-500 hover:border-pink-500 hover:shadow-md
+               transition-all duration-300"
+  >
+    <i className="fa fa-instagram text-2xl text-pink-500 group-hover:text-white transition"></i>
+  </a>
 
-              <div className="flex-1">
-                <p className="text-xs font-bold text-green-600 group-hover:text-white/80 uppercase tracking-wide">
-                  WhatsApp
-                </p>
+  {/* Facebook */}
+  <a
+    href="https://www.facebook.com/shivyog.electrical/about/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Facebook"
+    className="group h-14 w-14 flex items-center justify-center rounded-2xl
+               bg-white border border-blue-100 shadow-sm
+               hover:bg-blue-600 hover:border-blue-600 hover:shadow-md
+               transition-all duration-300"
+  >
+    <i className="fa fa-facebook text-2xl text-blue-600 group-hover:text-white transition"></i>
+  </a>
 
-                <p className="text-sm md:text-base font-bold text-navy-700 group-hover:text-white">
-                  {t('contact_whatsapp')}
-                </p>
-              </div>
-
-              <span className="text-green-500 group-hover:text-white text-xl">
-                →
-              </span>
-
-            </a>
+</div>
 
             {/* Small Info */}
             <div className="mt-6 flex flex-wrap gap-2">
