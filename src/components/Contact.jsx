@@ -158,34 +158,41 @@ export default function Contact() {
 
             {/* Phone Numbers */}
             <div className="mt-4 space-y-3">
+<a
+  href={telLink('9552884781')}
+  className="group flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 hover:bg-blue-500 hover:border-blue-500 transition-all duration-300"
+>
+  <div className="h-11 w-11 shrink-0 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xl shadow-md group-hover:bg-white group-hover:text-blue-500 transition">
+    📞
+  </div>
 
-              {PHONE_NUMBERS.map((n) => (
-                <a
-                  key={n}
-                  href={telLink(n)}
-                  className="group flex items-center gap-4 p-4 rounded-2xl bg-blue-50 border border-blue-100 hover:bg-blue-500 hover:border-blue-500 transition-all duration-300"
-                >
+  <div className="flex-1">
+    <p className="text-xs font-bold text-blue-500 group-hover:text-white/80 uppercase tracking-wide">
+      {lang === 'en' ? 'Call Us' : 'फोन करा'}
+    </p>
 
-                  <div className="h-11 w-11 shrink-0 rounded-xl bg-blue-500 text-white flex items-center justify-center text-xl shadow-md group-hover:bg-white group-hover:text-blue-500 transition">
-                    📞
-                  </div>
+    <p className="text-sm md:text-base font-bold text-navy-700 group-hover:text-white">
+      9552884781
+    </p>
+  </div>
 
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-blue-500 group-hover:text-white/80 uppercase tracking-wide">
-                      {lang === 'en' ? 'Call Us' : 'फोन करा'}
-                    </p>
-
-                    <p className="text-sm md:text-base font-bold text-navy-700 group-hover:text-white">
-                      {n}
-                    </p>
-                  </div>
-
-                  <span className="text-blue-500 group-hover:text-white text-xl">
-                    →
-                  </span>
-
-                </a>
-              ))}
+  <span className="text-blue-500 group-hover:text-white text-xl">
+    →
+  </span>
+</a>
+               {/* <a
+                href="https://g.page/r/CUkTq0OMoaWhECE/review"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full
+                           bg-gradient-to-r from-yellow-400 to-yellow-500
+                           text-navy-700 font-semibold px-6 py-3
+                           shadow-sm hover:shadow-md hover:brightness-105
+                           transition-all duration-300"
+              >
+                <i className="fa fa-star text-lg"></i>
+                Give us a Review
+              </a> */}
 
             </div>
 {/* Social Media */}
@@ -254,6 +261,7 @@ export default function Contact() {
               <span  className="inline-flex items-center gap-1.5 rounded-full bg-cyan-50 text-cyan-600 px-3 py-1.5 text-xs font-semibold">
                 🛠️ Services
               </span >
+              
 
             </div>
 
