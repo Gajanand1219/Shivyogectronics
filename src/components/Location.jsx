@@ -41,18 +41,66 @@ export default function Location() {
                 ))}
               </div>
             </div>
-            <div className="flex items-start gap-3">
-              <a
-                href={waLink(WA_MESSAGES.general)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-navy-600 font-medium hover:text-royal-500"
-              >
-              <i className="fa fa-whatsapp text-3xl text-green-500"></i>
 
-                {t('location_whatsapp')}
-              </a>
-            </div>
+           {/* Contact & Social Icons */}
+<div className="mt-2 flex items-center justify-center gap-3
+                rounded-2xl border border-gray-100
+                bg-gradient-to-r from-blue-50 via-green-50 via-pink-50 to-indigo-50
+                px-4 py-3 shadow-sm">
+
+  {/* Call */}
+ <a
+  href="https://www.google.com/maps/search/?api=1&query=Shivyog%20Electrical%20and%20Electronics%2C%20Mama%20Chowk%2C%20Main%20Road%2C%20Vasmat%2C%20Hingoli%2C%20Maharashtra"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+>
+  <i className="fa fa-map-marker text-lg"></i>
+</a>
+
+  {/* WhatsApp */}
+  <a
+    href={waLink(WA_MESSAGES.general)}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp"
+    className="group h-11 w-11 flex items-center justify-center rounded-xl
+               bg-white border border-green-100 shadow-sm
+               hover:bg-green-500 hover:border-green-500
+               transition-all duration-300"
+  >
+    <i className="fa fa-whatsapp text-xl text-green-500 group-hover:text-white transition"></i>
+  </a>
+
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/shivyog.electrical/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Instagram"
+    className="group h-11 w-11 flex items-center justify-center rounded-xl
+               bg-white border border-pink-100 shadow-sm
+               hover:bg-pink-500 hover:border-pink-500
+               transition-all duration-300"
+  >
+    <i className="fa fa-instagram text-xl text-pink-500 group-hover:text-white transition"></i>
+  </a>
+
+  {/* Facebook */}
+  <a
+    href="https://www.facebook.com/shivyog.electrical/about/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Facebook"
+    className="group h-11 w-11 flex items-center justify-center rounded-xl
+               bg-white border border-blue-100 shadow-sm
+               hover:bg-blue-600 hover:border-blue-600
+               transition-all duration-300"
+  >
+    <i className="fa fa-facebook text-xl text-blue-600 group-hover:text-white transition"></i>
+  </a>
+
+</div>
 
             <a
               href={MAPS_LINK}
