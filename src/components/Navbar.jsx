@@ -138,22 +138,61 @@ export default function Navbar() {
               </li>
             ))}
           </ul>
-          <div className="flex gap-2 px-4 pb-4">
-            <a
-              href={telLink(PHONE_NUMBERS[0])}
-              className="flex-1 text-center rounded-full border-2 border-navy-600 text-navy-600 py-2.5 text-sm font-semibold"
-            >
-              {t('nav_call')}
-            </a>
-            <a
-              href={waLink(WA_MESSAGES.general)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 text-center rounded-full bg-green-500 text-white py-2.5 text-sm font-semibold"
-            >
-              {t('nav_whatsapp')}
-            </a>
-          </div>
+          <div className="mx-4 mb-4 mt-2 flex items-center justify-center gap-4
+                rounded-2xl border border-gray-100
+                bg-gradient-to-r from-green-50 via-pink-50 to-blue-50
+                px-5 py-3 shadow-sm">
+
+  {/* WhatsApp */}
+  <a
+    href={waLink(WA_MESSAGES.general)}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp"
+    className="h-10 w-10 flex items-center justify-center rounded-xl
+               bg-white shadow-sm border border-green-100
+               hover:bg-green-500 transition-all duration-300"
+  >
+    <i className="fa fa-whatsapp text-xl text-green-500 hover:text-white"></i>
+  </a>
+
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/shivyog.electrical/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Instagram"
+    className="h-10 w-10 flex items-center justify-center rounded-xl
+               bg-white shadow-sm border border-pink-100
+               hover:bg-pink-500 transition-all duration-300"
+  >
+    <i className="fa fa-instagram text-xl text-pink-500"></i>
+  </a>
+
+  {/* Facebook */}
+  <a
+    href="https://www.facebook.com/shivyog.electrical/about/"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Facebook"
+    className="h-10 w-10 flex items-center justify-center rounded-xl
+               bg-white shadow-sm border border-blue-100
+               hover:bg-blue-600 transition-all duration-300"
+  >
+    <i className="fa fa-facebook text-xl text-blue-600"></i>
+  </a>
+
+
+  <a
+  href="https://www.google.com/maps/dir/?api=1&destination=Shivyog%20Electrical%20and%20Electronics%2C%20Mama%20Chowk%2C%20Main%20Road%2C%20Vasmat%2C%20Hingoli%2C%20Maharashtra"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+>
+  <i className="fa fa-map-marker text-lg"></i>
+</a>
+
+</div>
         </div>
       )}
     </header>
