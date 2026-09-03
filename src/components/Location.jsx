@@ -100,6 +100,8 @@ export default function Location() {
     <i className="fa fa-facebook text-xl text-blue-600 group-hover:text-white transition"></i>
   </a>
 
+ 
+
 </div>
 
             <a
@@ -110,6 +112,20 @@ export default function Location() {
             >
               {t('location_directions')}
             </a>
+
+                         {/* <a
+              href="https://g.page/r/CUkTq0OMoaWhECE/review"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center justify-center gap-2 rounded-full
+                         bg-gradient-to-r from-yellow-400 to-yellow-500
+                         text-navy-700 font-semibold px-6 py-3
+                         shadow-sm hover:shadow-md hover:brightness-105
+                         transition-all duration-300"
+            >
+              <i className="fa fa-star text-lg"></i>
+              Give us a Review
+            </a> */}
           </div>
         </div>
       </div>
