@@ -18,6 +18,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import FloatingButtons from './components/FloatingButtons'
 import AdminPanel from './components/AdminPanel'
+import ReviewPopup from './components/ReviewPopup'
 
 export default function App() {
   const [activeCategory, setActiveCategory] = useState('सर्व')
@@ -63,9 +64,13 @@ export default function App() {
         <Location />
         <Contact />
       </main>
-      <Footer onOpenAdmin={() => setAdminOpen(true)} />
-      <FloatingButtons />
-      {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
+     <Footer onOpenAdmin={() => setAdminOpen(true)} />
+
+<ReviewPopup />
+
+<FloatingButtons />
+
+{adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
     </div>
   )
 }
