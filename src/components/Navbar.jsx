@@ -184,7 +184,7 @@ export default function Navbar() {
 
 
   <a
-  href="https://www.google.com/maps/dir/?api=1&destination=Shivyog%20Electrical%20and%20Electronics%2C%20Mama%20Chowk%2C%20Main%20Road%2C%20Vasmat%2C%20Hingoli%2C%20Maharashtra"
+  href="https://www.google.com/maps/search/?api=1&query=Shivyog%20Electrical%20and%20Electronics%2C%20Mama%20Chowk%2C%20Main%20Road%2C%20Vasmat%2C%20Hingoli%2C%20Maharashtra"
   target="_blank"
   rel="noopener noreferrer"
   className="inline-flex items-center gap-2 rounded-xl bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm font-semibold text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
