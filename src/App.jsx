@@ -121,6 +121,7 @@ import Footer from './components/Footer'
 import FloatingButtons from './components/FloatingButtons'
 import AdminPanel from './components/AdminPanel'
 import ReviewPopup from './components/ReviewPopup'
+import { Analytics } from '@vercel/analytics/react'
 
 /* =========================================================
    LOCAL SEO CONTENT
@@ -435,6 +436,7 @@ export default function App() {
         =================================================== */}
 
         <Contact />
+         <Analytics />
 
       </main>
 
