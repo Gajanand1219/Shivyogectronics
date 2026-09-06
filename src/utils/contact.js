@@ -1,4 +1,4 @@
-export const WHATSAPP_NUMBER = '917038319408' // +91 7038319408
+export const WHATSAPP_NUMBER = '9552884781' // +91 7038319408
 export const PHONE_NUMBERS = ['7038319408', '9552884781']
 export const SHOP_ADDRESS = 'मामा चौक, मेन रोड, वसमत, जि. हिंगोली, महाराष्ट्र'
 export const FACEBOOK_URL = 'https://www.facebook.com/shivyog.electrical/about/'
