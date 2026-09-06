@@ -187,23 +187,25 @@ export default function Navbar() {
               <i className="fa fa-facebook text-xl text-blue-600"></i>
             </a>
 
-            {/* Google Maps */}
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=Shivyog%20Electrical%20and%20Electronics%2C%20Mama%20Chowk%2C%20Main%20Road%2C%20Vasmat%2C%20Hingoli%2C%20Maharashtra"
+             <a
+                href="https://www.youtube.com/@Shivyog.Electrical"
+
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Google Maps"
+              aria-label="YouTube"
               onClick={() => setOpen(false)}
               className="h-10 w-10 flex items-center justify-center rounded-xl
-                        bg-white shadow-sm border border-red-100
-                        hover:bg-red-500 transition-all duration-300"
+                        bg-white shadow-sm border border-blue-100
+                        hover:bg-blue-600 transition-all duration-300"
             >
-              <i className="fa fa-map-marker text-xl text-red-500"></i>
+              <i className="fa fa-youtube-play text-xl text-red-600"></i>
             </a>
 
+            
+
             {/* Google Review */}
-            {/* <a
-              href="https://g.page/r/CUkTq0OMoaWhECE/review"
+            <a
+              href="https://g.page/r/CQh8LMgy6ldvEBE/review"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Google Review"
@@ -213,7 +215,7 @@ export default function Navbar() {
                         hover:bg-yellow-400 transition-all duration-300"
             >
               <i className="fa fa-star text-xl text-yellow-500"></i>
-            </a> */}
+            </a> 
 
           </div>
         </div>
