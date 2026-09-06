@@ -170,7 +170,24 @@ export default function App() {
   }, [])
 
   return (
-    <div className="pb-14 md:pb-0 overflow-x-hidden">
+        <div className="pb-14 md:pb-0 overflow-x-hidden">
+          {isFAQPage ? (
+            <>
+              <Navbar />
+      
+              <main className="pt-20">
+                <LocalSEOSection />
+                <LocalFAQ />
+              </main>
+      
+              <Footer
+                onOpenAdmin={() => setAdminOpen(true)}
+              />
+      
+              <FloatingButtons />
+            </>
+          ) : (
+            <>
 
       {/* =====================================================
           NAVBAR
@@ -292,12 +309,13 @@ export default function App() {
           ADMIN PANEL
       ===================================================== */}
 
-      {adminOpen && (
+            {adminOpen && (
         <AdminPanel
           onClose={() => setAdminOpen(false)}
         />
       )}
-
+      </>
+    )}
     </div>
   )
 }
