@@ -180,8 +180,8 @@ export default function Contact() {
     →
   </span>
 </a>
-               {/* <a
-                href="https://g.page/r/CUkTq0OMoaWhECE/review"
+              <a
+                href="https://g.page/r/CQh8LMgy6ldvEBE/review"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-2 inline-flex items-center justify-center gap-2 rounded-full
@@ -192,7 +192,7 @@ export default function Contact() {
               >
                 <i className="fa fa-star text-lg"></i>
                 Give us a Review
-              </a> */}
+              </a> 
 
             </div>
 {/* Social Media */}
@@ -244,6 +244,20 @@ export default function Contact() {
   >
     <i className="fa fa-facebook text-2xl text-blue-600 group-hover:text-white transition"></i>
   </a>
+
+  {/* YouTube */}
+<a
+  href="https://www.youtube.com/@Shivyog.Electrical"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="YouTube"
+  className="group h-14 w-14 flex items-center justify-center rounded-2xl
+             bg-white border border-red-100 shadow-sm
+             hover:bg-red-600 hover:border-red-600 hover:shadow-md
+             transition-all duration-300"
+>
+  <i className="fa fa-youtube-play text-2xl text-red-600 group-hover:text-white transition"></i>
+</a>
 
 </div>
 
