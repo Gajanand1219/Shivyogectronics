@@ -180,7 +180,7 @@ export default function Navbar() {
                 className="
                   relative
                   rounded-xl
-                  bg-navy-800
+                bg-black
                   px-3
                   py-2
                   text-[11px]
@@ -238,7 +238,7 @@ export default function Navbar() {
               border
               border-navy-100
               items-center
-            bg-black
+            bg-white
               shadow-sm
               transition-all
               duration-300
