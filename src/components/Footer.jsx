@@ -142,6 +142,22 @@ export default function Footer({ onOpenAdmin }) {
               </svg>
             </a>
 
+            {/* YOUTUBE */}
+              <a
+                href="https://www.youtube.com/@Shivyog.Electrical"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+                className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-red-600 transition"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 fill-current"
+                >
+                  <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.7 31.7 0 0 0 0 12a31.7 31.7 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.7 31.7 0 0 0 24 12a31.7 31.7 0 0 0-.5-5.8zM9.6 15.9V8.1l6.5 3.9-6.5 3.9z" />
+                </svg>
+              </a>
+
           </div>
         </div>
 
