@@ -232,6 +232,14 @@ export default function Footer({ onOpenAdmin }) {
             >
               📍 {SHOP_ADDRESS}
             </a>
+
+            <a
+          href="/faq"
+          className="inline-flex items-center gap-1.5 mt-4 text-[11px] sm:text-sm font-semibold text-white hover:text-gold-400 transition-colors"
+        >
+          ❓ FAQ
+        </a>
+                    
           </div>
 
         </div>
