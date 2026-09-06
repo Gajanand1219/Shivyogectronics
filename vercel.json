@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/faq",
-      "destination": "/"
+      "destination": "/index.html"
     }
   ]
 }
