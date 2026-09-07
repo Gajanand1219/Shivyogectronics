@@ -350,14 +350,23 @@ export default function Navbar() {
                     href={l.href}
                     onClick={(e) => {
                       setOpen(false)
-                  
+                    
                       if (l.href.startsWith('/#')) {
                         e.preventDefault()
-                  
+                    
                         const hash = l.href.substring(1)
-                  
+                    
                         if (window.location.pathname !== '/') {
                           window.location.href = `/${hash}`
+                    
+                          setTimeout(() => {
+                            const section = document.querySelector(hash)
+                    
+                            section?.scrollIntoView({
+                              behavior: 'smooth',
+                              block: 'start',
+                            })
+                          }, 500)
                         } else {
                           document.querySelector(hash)?.scrollIntoView({
                             behavior: 'smooth',
