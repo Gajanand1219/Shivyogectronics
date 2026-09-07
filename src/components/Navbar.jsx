@@ -22,11 +22,17 @@ export default function Navbar() {
     { href: '#contact', label: t('nav_contact') },
   ]
 
-  const mobileLinks = links.map((link) =>
-      link.href === '#tips'
-        ? { ...link, href: '/tips' }
-        : link
-    )
+  const mobileLinks = links.map((link) => {
+    if (link.href === '#tips') {
+      return { ...link, href: '/tips' }
+    }
+  
+    if (link.href.startsWith('#')) {
+      return { ...link, href: `/${link.href}` }
+    }
+  
+    return link
+  })
   
 
   useEffect(() => {
