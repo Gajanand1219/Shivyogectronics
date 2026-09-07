@@ -347,12 +347,29 @@ export default function Navbar() {
                 className="border-b border-navy-50 last:border-0"
               >
                 <a
-                  href={l.href}
-                  onClick={() => setOpen(false)}
-                  className="block py-3 hover:text-royal-500 transition-colors"
-                >
-                  {l.label}
-                </a>
+                    href={l.href}
+                    onClick={(e) => {
+                      setOpen(false)
+                  
+                      if (l.href.startsWith('/#')) {
+                        e.preventDefault()
+                  
+                        const hash = l.href.substring(1)
+                  
+                        if (window.location.pathname !== '/') {
+                          window.location.href = `/${hash}`
+                        } else {
+                          document.querySelector(hash)?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start',
+                          })
+                        }
+                      }
+                    }}
+                    className="block py-3 hover:text-royal-500 transition-colors"
+                  >
+                    {l.label}
+                  </a>
               </li>
             ))}
           </ul>
