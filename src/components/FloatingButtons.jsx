@@ -152,6 +152,18 @@ export default function FloatingButtons() {
         </a>
       </div>
 
+        {/* Mobile AI Chatbot Floating Button */}
+    <a
+      href="/chatbot"
+      aria-label="AI Chatbot"
+      title="Shivyog AI Assistant"
+      className="md:hidden fixed right-4 bottom-20 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-indigo-600 to-blue-500 text-white flex items-center justify-center text-2xl shadow-xl hover:scale-110 transition-transform"
+    >
+      🤖
+      <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-400 border-2 border-white rounded-full" />
+    </a>
+
+
       {/* Mobile Sticky Bottom Action Bar */}
       <div className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-navy-100 shadow-[0_-4px_20px_rgba(11,37,69,0.12)] grid grid-cols-3">
 
