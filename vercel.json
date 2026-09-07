@@ -7,6 +7,10 @@
     {
       "source": "/tips",
       "destination": "/"
+    },
+    {
+      "source": "/chatbot",
+      "destination": "/"
     }
   ]
 }
