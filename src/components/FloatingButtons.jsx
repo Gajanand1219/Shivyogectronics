@@ -117,7 +117,7 @@ export default function FloatingButtons() {
       <div className="hidden md:flex flex-col gap-3 fixed bottom-6 right-6 z-40">
 
         {/* AI Chatbot */}
-        <a
+        {/* <a
           href="/chatbot"
           aria-label="AI Chatbot"
           title="Shivyog AI Assistant"
@@ -125,9 +125,8 @@ export default function FloatingButtons() {
         >
           🤖
 
-          {/* Online indicator */}
           <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-400 border-2 border-white rounded-full" />
-        </a>
+        </a> */}
 
         {/* WhatsApp */}
         <a
@@ -153,7 +152,7 @@ export default function FloatingButtons() {
       </div>
 
         {/* Mobile AI Chatbot Floating Button */}
-    <a
+    {/* <a
       href="/chatbot"
       aria-label="AI Chatbot"
       title="Shivyog AI Assistant"
@@ -161,7 +160,7 @@ export default function FloatingButtons() {
     >
       🤖
       <span className="absolute -top-1 -right-1 h-3 w-3 bg-green-400 border-2 border-white rounded-full" />
-    </a>
+    </a> */}
 
 
       {/* Mobile Sticky Bottom Action Bar */}
