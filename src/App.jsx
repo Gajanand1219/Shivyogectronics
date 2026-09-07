@@ -133,6 +133,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState('सर्व')
   const [adminOpen, setAdminOpen] = useState(false)
   const isFAQPage = window.location.pathname === '/faq'
+  const isTipsPage = window.location.pathname === '/tips'
 
   /* ---------------------------------------------------------
      Admin direct access
@@ -171,23 +172,37 @@ export default function App() {
 
   return (
         <div className="pb-14 md:pb-0 overflow-x-hidden">
-          {isFAQPage ? (
-            <>
-              <Navbar />
-      
-              <main className="pt-20">
-                <LocalSEOSection />
-                <LocalFAQ />
-              </main>
-      
-              <Footer
-                onOpenAdmin={() => setAdminOpen(true)}
-              />
-      
-              <FloatingButtons />
-            </>
-          ) : (
-            <>
+         {isFAQPage ? (
+              <>
+                <Navbar />
+            
+                <main className="pt-20">
+                  <LocalSEOSection />
+                  <LocalFAQ />
+                </main>
+            
+                <Footer
+                  onOpenAdmin={() => setAdminOpen(true)}
+                />
+            
+                <FloatingButtons />
+              </>
+            ) : isTipsPage ? (
+              <>
+                <Navbar />
+            
+                <main className="pt-20">
+                  <Tips />
+                </main>
+            
+                <Footer
+                  onOpenAdmin={() => setAdminOpen(true)}
+                />
+            
+                <FloatingButtons />
+              </>
+            ) : (
+              <>
 
       {/* =====================================================
           NAVBAR
@@ -254,13 +269,15 @@ export default function App() {
             TIPS
         =================================================== */}
 
-        <Tips />
-
-        {/* ===================================================
-            GALLERY
-        =================================================== */}
-
-        <Gallery />
+       <div className="hidden md:block">
+           <Tips />
+         </div>
+         
+         {/* ===================================================
+             GALLERY
+         =================================================== */}
+         
+         <Gallery />
 
         {/* ===================================================
             ABOUT
