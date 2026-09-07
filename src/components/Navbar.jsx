@@ -22,6 +22,13 @@ export default function Navbar() {
     { href: '#contact', label: t('nav_contact') },
   ]
 
+  const mobileLinks = links.map((link) =>
+      link.href === '#tips'
+        ? { ...link, href: '/tips' }
+        : link
+    )
+  
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
 
@@ -328,7 +335,7 @@ export default function Navbar() {
           "
         >
           <ul className="flex flex-col px-4 py-3 font-marathi text-navy-600 font-medium">
-            {links.map((l) => (
+          {mobileLinks.map((l) => (
               <li
                 key={l.href}
                 className="border-b border-navy-50 last:border-0"
