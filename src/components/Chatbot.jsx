@@ -909,510 +909,296 @@ http://127.0.0.1:8000`,
   ========================================================= */
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-14 md:pb-0">
-
-      {/* =====================================================
-          EXISTING SHOP NAVBAR
-      ===================================================== */}
-
+    <div className="h-[100dvh] w-full overflow-hidden bg-slate-100 flex flex-col">
       <Navbar />
-
 
       {/* =====================================================
           CHATBOT HEADER
       ===================================================== */}
+      <section className="pt-16 md:pt-20 flex-1 min-h-0">
+        <div className="h-full flex flex-col">
+          <div className="bg-gradient-to-r from-indigo-700 via-blue-600 to-sky-500 text-white shrink-0">
+            <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-10 w-10 md:h-12 md:w-12 shrink-0 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center text-xl md:text-2xl shadow-lg">
+                    🤖
+                  </div>
 
-      <section className="pt-20">
-
-        <div className="bg-gradient-to-r from-indigo-700 via-blue-600 to-sky-500 text-white">
-
-          <div className="max-w-6xl mx-auto px-4 py-7">
-
-            <div className="flex items-center justify-between gap-4">
-
-              <div className="flex items-center gap-3">
-
-                <div className="h-12 w-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center text-2xl shadow-lg">
-                  🤖
+                  <div className="min-w-0">
+                    <h2 className="text-base md:text-2xl font-bold truncate">
+                      Shivyog AI Assistant
+                    </h2>
+                    <p className="text-[10px] md:text-sm text-white/80 truncate">
+                      Products • Services • Prices • Support
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <h1 className="text-xl md:text-2xl font-bold">
-                    Shivyog AI Assistant
-                  </h1>
-
-                  <p className="text-xs md:text-sm text-white/80">
-                    Products · Services · Support
-                  </p>
-                </div>
-
-              </div>
-
-
-              <div className="flex items-center gap-2">
-
-                <div
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold ${
-                    online
-                      ? 'bg-green-400/20 text-white'
-                      : 'bg-red-400/20 text-white'
-                  }`}
-                >
-
-                  <span
-                    className={`h-2 w-2 rounded-full ${
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <div
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] md:text-xs font-semibold ${
                       online
-                        ? 'bg-green-300'
-                        : 'bg-red-300'
+                        ? 'bg-green-400/20 text-white'
+                        : 'bg-red-400/20 text-white'
                     }`}
-                  />
+                  >
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        online ? 'bg-green-300' : 'bg-red-300'
+                      }`}
+                    />
+                    <span className="hidden sm:inline">
+                      {online ? 'AI Online' : 'Offline'}
+                    </span>
+                  </div>
 
-                  {online
-                    ? 'AI Online'
-                    : 'Offline'}
-
+                  <button
+                    onClick={clearChat}
+                    className="h-9 w-9 md:h-10 md:w-10 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+                    title="Clear chat"
+                    aria-label="Clear chat"
+                  >
+                    🗑️
+                  </button>
                 </div>
-
-
-                <button
-                  onClick={clearChat}
-                  className="h-10 w-10 rounded-xl bg-white/10 hover:bg-white/20 transition"
-                  title="Clear chat"
-                >
-                  🗑️
-                </button>
-
               </div>
-
             </div>
-
           </div>
 
-        </div>
+          {/* =================================================
+              CHAT CARD
+          ================================================= */}
+          <div className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-0 sm:px-3 md:px-5 md:py-3">
+            <div className="h-full bg-white md:rounded-3xl md:shadow-xl md:border md:border-slate-200 overflow-hidden flex flex-col">
 
-
-        {/* =================================================
-            CHAT AREA
-        ================================================= */}
-
-        <div className="max-w-6xl mx-auto px-3 md:px-5 py-5">
-
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-
-            {/* MESSAGE AREA */}
-
-            <div className="h-[calc(100vh-360px)] min-h-[500px] overflow-y-auto px-4 md:px-8 py-6">
-
-              <div className="max-w-4xl mx-auto">
-
-                {messages.map(
-                  (message) => (
-
+              {/* MESSAGE AREA — ONLY THIS AREA SCROLLS */}
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-4 md:px-8 py-4 md:py-6 [scrollbar-width:thin]">
+                <div className="max-w-4xl mx-auto">
+                  {messages.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex gap-3 mb-6 ${
-                        message.role ===
-                        'user'
+                      className={`flex gap-2 md:gap-3 mb-4 md:mb-6 ${
+                        message.role === 'user'
                           ? 'justify-end'
                           : 'justify-start'
                       }`}
                     >
-
-                      {/* BOT ICON */}
-
-                      {message.role ===
-                        'assistant' && (
-                        <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+                      {message.role === 'assistant' && (
+                        <div className="flex-shrink-0 h-8 w-8 md:h-9 md:w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-sm md:text-base">
                           🤖
                         </div>
                       )}
 
-
-                      {/* MESSAGE */}
-
                       <div
-                        className={`max-w-[88%] md:max-w-[75%] ${
-                          message.role ===
-                          'user'
-                            ? 'order-first'
-                            : ''
+                        className={`max-w-[86%] sm:max-w-[80%] md:max-w-[75%] ${
+                          message.role === 'user' ? 'order-first' : ''
                         }`}
                       >
-
                         <div
-                          className={`px-4 py-3 rounded-2xl text-sm leading-7 ${
-                            message.role ===
-                            'user'
-                              ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md'
-                              : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md'
+                          className={`px-3.5 py-2.5 md:px-4 md:py-3 rounded-2xl text-[13px] md:text-sm leading-6 md:leading-7 break-words ${
+                            message.role === 'user'
+                              ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md shadow-sm'
+                              : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md shadow-sm'
                           }`}
                         >
-                          {renderAnswer(
-                            message.content
-                          )}
+                          {renderAnswer(message.content)}
                         </div>
 
-
-                        {/* ACTION BUTTONS */}
-
-                        {message.role ===
-                          'assistant' &&
-                          message.actions
-                            ?.length >
-                            0 && (
-
-                            <div className="flex flex-wrap gap-2 mt-3">
-
-                              {message.actions.map(
-                                (
-                                  action,
-                                  index
-                                ) => (
-                                  <DynamicAction
-                                    key={
-                                      index
-                                    }
-                                    action={
-                                      action
-                                    }
-                                  />
-                                )
-                              )}
-
+                        {message.role === 'assistant' &&
+                          message.actions?.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {message.actions.map((action, index) => (
+                                <DynamicAction key={index} action={action} />
+                              ))}
                             </div>
                           )}
 
-
-                        {/* SOURCES */}
-
-                        {message.role ===
-                          'assistant' &&
-                          message.sources
-                            ?.length >
-                            0 && (
-
-                            <div className="mt-2 text-[10px] text-slate-400">
-                              📚{' '}
-                              {
-                                message
-                                  .sources
-                                  .length
-                              }{' '}
-                              shop knowledge sources used
+                        {message.role === 'assistant' &&
+                          message.sources?.length > 0 && (
+                            <div className="mt-2 text-[9px] md:text-[10px] text-slate-400">
+                              📚 {message.sources.length} shop knowledge sources used
                             </div>
                           )}
 
-
-                        {/* LISTEN */}
-
-                        {message.role ===
-                          'assistant' && (
-                          <div className="mt-2">
-
+                        {message.role === 'assistant' && (
+                          <div className="mt-1.5">
                             <button
                               onClick={() =>
                                 speaking
                                   ? stopSpeaking()
-                                  : speakAnswer(
-                                      message.content
-                                    )
+                                  : speakAnswer(message.content)
                               }
-                              className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500"
+                              className="text-[10px] md:text-xs px-2.5 py-1 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-500"
                             >
-                              {speaking
-                                ? '⏹ Stop'
-                                : '🔊 Listen'}
+                              {speaking ? '⏹ Stop' : '🔊 Listen'}
                             </button>
-
                           </div>
                         )}
 
-
-                        {/* SUGGESTIONS */}
-
-                        {message.role ===
-                          'assistant' &&
-                          message.suggestions
-                            ?.length >
-                            0 && (
-
-                            <div className="flex flex-wrap gap-2 mt-3">
-
-                              {message.suggestions.map(
-                                (
-                                  suggestion,
-                                  index
-                                ) => (
-
-                                  <button
-                                    key={
-                                      index
-                                    }
-                                    onClick={() =>
-                                      sendMessage(
-                                        suggestion.text
-                                      )
-                                    }
-                                    disabled={
-                                      loading
-                                    }
-                                    className="px-3 py-2 rounded-xl border border-indigo-100 bg-indigo-50/60 hover:bg-indigo-100 text-xs text-indigo-700 font-medium transition disabled:opacity-50"
-                                  >
-                                    {
-                                      suggestion.icon
-                                    }{' '}
-                                    {
-                                      suggestion.text
-                                    }
-                                  </button>
-
-                                )
-                              )}
-
+                        {message.role === 'assistant' &&
+                          message.suggestions?.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 mt-2">
+                              {message.suggestions.map((suggestion, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() => sendMessage(suggestion.text)}
+                                  disabled={loading}
+                                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl border border-indigo-100 bg-indigo-50/70 hover:bg-indigo-100 text-[10px] md:text-xs text-indigo-700 font-medium transition disabled:opacity-50"
+                                >
+                                  {suggestion.icon} {suggestion.text}
+                                </button>
+                              ))}
                             </div>
                           )}
-
                       </div>
 
-
-                      {/* USER ICON */}
-
-                      {message.role ===
-                        'user' && (
-                        <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center">
+                      {message.role === 'user' && (
+                        <div className="flex-shrink-0 h-8 w-8 md:h-9 md:w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-sm">
                           👤
                         </div>
                       )}
-
                     </div>
+                  ))}
 
-                  )
-                )}
-
-
-                {/* TYPING */}
-
-                {loading && (
-
-                  <div className="flex gap-3 mb-6">
-
-                    <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center">
-                      🤖
-                    </div>
-
-                    <div className="bg-slate-50 border border-slate-200 px-5 py-4 rounded-2xl">
-
-                      <div className="flex gap-1.5">
-
-                        <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" />
-
-                        <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
-
-                        <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
-
+                  {loading && (
+                    <div className="flex gap-2 md:gap-3 mb-4 md:mb-6">
+                      <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+                        🤖
                       </div>
 
+                      <div className="bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl shadow-sm">
+                        <div className="flex gap-1.5">
+                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" />
+                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                        </div>
+                      </div>
                     </div>
+                  )}
 
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
+
+              {/* =================================================
+                  INPUT AREA — FIXED INSIDE CHAT CARD
+              ================================================= */}
+              <div className="shrink-0 border-t border-slate-200 bg-white p-2.5 sm:p-3 md:p-5">
+                <div className="max-w-4xl mx-auto">
+
+                  {/* QUICK BUTTONS */}
+                  <div className="flex gap-1.5 overflow-x-auto overscroll-contain mb-2.5 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <button
+                      onClick={() => sendMessage('shop cha timing kay ahe?')}
+                      disabled={loading}
+                      className="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-50 border text-[10px] md:text-xs hover:bg-slate-100 disabled:opacity-50"
+                    >
+                      🕘 Timing
+                    </button>
+
+                    <button
+                      onClick={() => sendMessage('shop location kay ahe?')}
+                      disabled={loading}
+                      className="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-50 border text-[10px] md:text-xs hover:bg-slate-100 disabled:opacity-50"
+                    >
+                      📍 Location
+                    </button>
+
+                    <button
+                      onClick={() => sendMessage('available products sang')}
+                      disabled={loading}
+                      className="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-50 border text-[10px] md:text-xs hover:bg-slate-100 disabled:opacity-50"
+                    >
+                      🛍 Products
+                    </button>
+
+                    <button
+                      onClick={() => sendMessage('services kontya available ahet?')}
+                      disabled={loading}
+                      className="shrink-0 px-2.5 py-1.5 rounded-xl bg-slate-50 border text-[10px] md:text-xs hover:bg-slate-100 disabled:opacity-50"
+                    >
+                      🛠 Services
+                    </button>
                   </div>
 
-                )}
+                  {/* INPUT BOX */}
+                  <div className="flex items-end gap-1.5 md:gap-2 bg-slate-50 border border-slate-300 rounded-2xl p-1.5 md:p-2 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100">
+                    <textarea
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      rows={1}
+                      placeholder="Ask about products, price, service..."
+                      className="flex-1 min-w-0 bg-transparent outline-none resize-none px-2 md:px-3 py-2.5 text-[13px] md:text-sm max-h-24 md:max-h-32"
+                    />
 
+                    {/* VOICE */}
+                    <button
+                      onClick={startVoice}
+                      disabled={loading}
+                      className={`h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-xl flex items-center justify-center text-base md:text-lg transition ${
+                        listening
+                          ? 'bg-red-500 text-white animate-pulse'
+                          : 'bg-white border border-slate-200 hover:bg-indigo-50'
+                      } disabled:opacity-40`}
+                      title={listening ? 'Stop voice' : 'Voice input'}
+                      aria-label={listening ? 'Stop voice' : 'Voice input'}
+                    >
+                      {listening ? '⏹' : '🎙️'}
+                    </button>
 
-                <div
-                  ref={
-                    messagesEndRef
-                  }
-                />
+                    {/* SEND */}
+                    <button
+                      onClick={() => sendMessage()}
+                      disabled={loading || !input.trim()}
+                      className="h-10 w-10 md:h-11 md:w-11 shrink-0 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 transition"
+                      title="Send"
+                      aria-label="Send message"
+                    >
+                      ➤
+                    </button>
+                  </div>
 
+                  <div className="text-center text-[9px] md:text-[10px] text-slate-400 mt-1.5">
+                    Enter to send · 🎙️ बोलून थांबल्यावर message automatically send होईल
+                  </div>
+                </div>
               </div>
-
             </div>
-
-
-            {/* =================================================
-                INPUT
-            ================================================= */}
-
-            <div className="border-t border-slate-200 bg-white p-3 md:p-5">
-
-              <div className="max-w-4xl mx-auto">
-
-                {/* QUICK BUTTONS */}
-
-                <div className="flex flex-wrap gap-2 mb-3">
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'shop cha timing kay ahe?'
-                      )
-                    }
-                    disabled={loading}
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    🕘 Timing
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'shop location kay ahe?'
-                      )
-                    }
-                    disabled={loading}
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    📍 Location
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'available products sang'
-                      )
-                    }
-                    disabled={loading}
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    🛍 Products
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'services kontya available ahet?'
-                      )
-                    }
-                    disabled={loading}
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
-                  >
-                    🛠 Services
-                  </button>
-
-                </div>
-
-
-                {/* INPUT BOX */}
-
-                <div className="flex items-end gap-2 bg-slate-50 border border-slate-300 rounded-2xl p-2 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100">
-
-                  <textarea
-                    value={input}
-                    onChange={(e) =>
-                      setInput(
-                        e.target.value
-                      )
-                    }
-                    onKeyDown={
-                      handleKeyDown
-                    }
-                    rows={1}
-                    placeholder="Ask anything... LED bulb, wiring, price, service..."
-                    className="flex-1 bg-transparent outline-none resize-none px-3 py-3 text-sm max-h-32"
-                  />
-
-
-                  {/* VOICE */}
-
-                  <button
-                    onClick={
-                      startVoice
-                    }
-                    disabled={loading}
-                    className={`h-11 w-11 rounded-xl flex items-center justify-center text-lg transition ${
-                      listening
-                        ? 'bg-red-500 text-white animate-pulse'
-                        : 'bg-white border border-slate-200 hover:bg-indigo-50'
-                    } disabled:opacity-40`}
-                    title={
-                      listening
-                        ? 'Stop voice'
-                        : 'Voice input'
-                    }
-                  >
-                    {listening
-                      ? '⏹'
-                      : '🎙️'}
-                  </button>
-
-
-                  {/* SEND */}
-
-                  <button
-                    onClick={() =>
-                      sendMessage()
-                    }
-                    disabled={
-                      loading ||
-                      !input.trim()
-                    }
-                    className="h-11 w-11 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 transition"
-                    title="Send"
-                  >
-                    ➤
-                  </button>
-
-                </div>
-
-
-                <div className="text-center text-[10px] text-slate-400 mt-2">
-                  Enter to send · Shift + Enter for new line · 🎙️ बोलून थांबल्यावर message automatically send होईल
-                </div>
-
-              </div>
-
-            </div>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* =====================================================
           MOBILE CONTACT BAR
       ===================================================== */}
-
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-3 bg-white border-t shadow-xl">
-
+      <div className="md:hidden shrink-0 z-40 grid grid-cols-3 bg-white border-t shadow-xl safe-area-pb">
         <a
-          href={waLink(
-            WA_MESSAGES.general
-          )}
+          href={waLink(WA_MESSAGES.general)}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-3 text-center text-xs font-semibold text-green-600"
+          className="py-2.5 text-center text-[10px] font-semibold text-green-600 active:bg-green-50"
         >
           💬 WhatsApp
         </a>
 
-
         <a
-          href={telLink(
-            PHONE_NUMBERS[0]
-          )}
-          className="py-3 text-center text-xs font-semibold text-blue-600 border-x"
+          href={telLink(PHONE_NUMBERS[0])}
+          className="py-2.5 text-center text-[10px] font-semibold text-blue-600 border-x active:bg-blue-50"
         >
           📞 Call
         </a>
-
 
         <a
           href={MAPS_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-3 text-center text-xs font-semibold text-red-500"
+          className="py-2.5 text-center text-[10px] font-semibold text-red-500 active:bg-red-50"
         >
           🗺️ Directions
         </a>
-
       </div>
-
     </div>
   )
 }
