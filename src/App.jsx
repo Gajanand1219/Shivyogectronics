@@ -99,108 +99,6 @@
 
 
 
-// import { useEffect, useState } from 'react'
-// import Navbar from './components/Navbar'
-// import Hero from './components/Hero'
-// import TrustBadges from './components/TrustBadges'
-// import Categories from './components/Categories'
-// import Products from './components/Products'
-// import WaterHeaterSection from './components/WaterHeaterSection'
-// import FanSection from './components/FanSection'
-// import TvDthSection from './components/TvDthSection'
-// import DecorLightingSection from './components/DecorLightingSection'
-// import Services from './components/Services'
-// import WhyChooseUs from './components/WhyChooseUs'
-// import Tips from './components/Tips'
-// import Gallery from './components/Gallery'
-// import About from './components/About'
-// import Location from './components/Location'
-// import Contact from './components/Contact'
-// import Footer from './components/Footer'
-// import FloatingButtons from './components/FloatingButtons'
-// import AdminPanel from './components/AdminPanel'
-// import ReviewPopup from './components/ReviewPopup'
-
-// export default function App() {
-//   const [activeCategory, setActiveCategory] = useState('सर्व')
-//   const [adminOpen, setAdminOpen] = useState(false)
-
-//   // allow direct access via a #admin link/bookmark as well as the footer button
-//   useEffect(() => {
-//     if (window.location.hash === '#admin') setAdminOpen(true)
-//   }, [])
-
-//   // simple scroll-reveal for elements with the `reveal` class
-//   useEffect(() => {
-//     const els = document.querySelectorAll('.reveal')
-//     const io = new IntersectionObserver(
-//       (entries) => {
-//         entries.forEach((entry) => {
-//           if (entry.isIntersecting) entry.target.classList.add('in-view')
-//         })
-//       },
-//       { threshold: 0.15 }
-//     )
-//     els.forEach((el) => io.observe(el))
-//     return () => io.disconnect()
-//   }, [])
-
-//   return (
-//     <div className="pb-14 md:pb-0 overflow-x-hidden">
-//       <Navbar />
-//       <main>
-//         <Hero />
-//         <TrustBadges />
-//         <Categories onSelectCategory={setActiveCategory} />
-//         <Products activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
-//         <WaterHeaterSection />
-//         <FanSection />
-//         <TvDthSection />
-//         <DecorLightingSection />
-//         <Services />
-//         <WhyChooseUs />
-//         <Tips />
-//         <Gallery />
-//         <About />
-//         <Location />
-//         <Contact />
-//       </main>
-//      <Footer onOpenAdmin={() => setAdminOpen(true)} />
-
-// <ReviewPopup />
-
-// <FloatingButtons />
-
-// {adminOpen && <AdminPanel onClose={() => setAdminOpen(false)} />}
-//     </div>
-//   )
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useEffect, useState } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -226,6 +124,7 @@ import { Analytics } from '@vercel/analytics/react'
 import Chatbot from './components/Chatbot'
 import LocalSEOSection from './components/LocalSEOSection'
 import LocalFAQ from './components/LocalFAQ'
+import TestChat from './components/TestChat'
 /* =========================================================
    MAIN APP
    ========================================================= */
@@ -236,6 +135,8 @@ export default function App() {
   const isFAQPage = window.location.pathname === '/faq'
   const isTipsPage = window.location.pathname === '/tips'
   const isChatbotPage = window.location.pathname === '/chatbot'
+  const isTestChatPage = window.location.pathname === '/chat'
+  
 
   /* ---------------------------------------------------------
      Admin direct access
@@ -246,6 +147,7 @@ export default function App() {
       setAdminOpen(true)
     }
   }, [])
+  
 
   /* ---------------------------------------------------------
      Scroll reveal
@@ -272,176 +174,184 @@ export default function App() {
     return () => io.disconnect()
   }, [])
 
-  return (
-        <div className="pb-14 md:pb-0 overflow-x-hidden">
+ return (
+  <div className="pb-14 md:pb-0 overflow-x-hidden">
 
-          {isChatbotPage ? (
-            <>
-              <Chatbot />
-            </>
+    {/* =====================================================
+        TEST CHAT PAGE
+        URL: /chat
+    ===================================================== */}
+    {isTestChatPage ? (
+      <TestChat />
 
-          ) : isFAQPage ? (
-            <>
-              <Navbar />
+    ) : isChatbotPage ? (
+      <>
+        <Chatbot />
+      </>
 
-              <main className="pt-20">
-                <LocalSEOSection />
-                <LocalFAQ />
-              </main>
+    ) : isFAQPage ? (
+      <>
+        <Navbar />
 
-              <Footer
-                onOpenAdmin={() => setAdminOpen(true)}
-              />
+        <main className="pt-20">
+          <LocalSEOSection />
+          <LocalFAQ />
+        </main>
 
-              <FloatingButtons />
-            </>
+        <Footer
+          onOpenAdmin={() => setAdminOpen(true)}
+        />
 
-          ) : isTipsPage ? (
-            <>
-              <Navbar />
+        <FloatingButtons />
+      </>
 
-              <main className="pt-20">
-                <Tips />
-              </main>
+    ) : isTipsPage ? (
+      <>
+        <Navbar />
 
-              <Footer
-                onOpenAdmin={() => setAdminOpen(true)}
-              />
+        <main className="pt-20">
+          <Tips />
+        </main>
 
-              <FloatingButtons />
-            </>
+        <Footer
+          onOpenAdmin={() => setAdminOpen(true)}
+        />
 
-          ) : (
-            <>
-              {/* =====================================================
-                  NAVBAR
-              ===================================================== */}
+        <FloatingButtons />
+      </>
 
-              <Navbar />
+    ) : (
+      <>
+        {/* =====================================================
+            NAVBAR
+        ===================================================== */}
 
-              <main>
+        <Navbar />
 
-                {/* ===================================================
-                    HERO
-                =================================================== */}
+        <main>
 
-                <Hero />
+          {/* ===================================================
+              HERO
+          =================================================== */}
 
-                {/* ===================================================
-                    TRUST
-                =================================================== */}
+          <Hero />
 
-                <TrustBadges />
+          {/* ===================================================
+              TRUST
+          =================================================== */}
 
-                {/* ===================================================
-                    CATEGORIES
-                =================================================== */}
+          <TrustBadges />
 
-                <Categories
-                  onSelectCategory={setActiveCategory}
-                />
+          {/* ===================================================
+              CATEGORIES
+          =================================================== */}
 
-                {/* ===================================================
-                    PRODUCTS
-                =================================================== */}
+          <Categories
+            onSelectCategory={setActiveCategory}
+          />
 
-                <Products
-                  activeCategory={activeCategory}
-                  setActiveCategory={setActiveCategory}
-                />
+          {/* ===================================================
+              PRODUCTS
+          =================================================== */}
 
-                {/* ===================================================
-                    PRODUCT SECTIONS
-                =================================================== */}
+          <Products
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+          />
 
-                <WaterHeaterSection />
+          {/* ===================================================
+              PRODUCT SECTIONS
+          =================================================== */}
 
-                <FanSection />
+          <WaterHeaterSection />
 
-                <TvDthSection />
+          <FanSection />
 
-                <DecorLightingSection />
+          <TvDthSection />
 
-                {/* ===================================================
-                    SERVICES
-                =================================================== */}
+          <DecorLightingSection />
 
-                <Services />
+          {/* ===================================================
+              SERVICES
+          =================================================== */}
 
-                {/* ===================================================
-                    WHY CHOOSE US
-                =================================================== */}
+          <Services />
 
-                <WhyChooseUs />
+          {/* ===================================================
+              WHY CHOOSE US
+          =================================================== */}
 
-                {/* ===================================================
-                    TIPS
-                =================================================== */}
+          <WhyChooseUs />
 
-                <div className="hidden md:block">
-                  <Tips />
-                </div>
+          {/* ===================================================
+              TIPS
+          =================================================== */}
 
-                {/* ===================================================
-                    GALLERY
-                =================================================== */}
+          <div className="hidden md:block">
+            <Tips />
+          </div>
 
-                <Gallery />
+          {/* ===================================================
+              GALLERY
+          =================================================== */}
 
-                {/* ===================================================
-                    ABOUT
-                =================================================== */}
+          <Gallery />
 
-                <About />
+          {/* ===================================================
+              ABOUT
+          =================================================== */}
 
-                {/* ===================================================
-                    LOCATION
-                =================================================== */}
+          <About />
 
-                <Location />
+          {/* ===================================================
+              LOCATION
+          =================================================== */}
 
-                {/* ===================================================
-                    CONTACT
-                =================================================== */}
+          <Location />
 
-                <Contact />
+          {/* ===================================================
+              CONTACT
+          =================================================== */}
 
-                <Analytics />
+          <Contact />
 
-              </main>
+          <Analytics />
 
-              {/* =====================================================
-                  FOOTER
-              ===================================================== */}
+        </main>
 
-              <Footer
-                onOpenAdmin={() => setAdminOpen(true)}
-              />
+        {/* =====================================================
+            FOOTER
+        ===================================================== */}
 
-              {/* =====================================================
-                  REVIEW POPUP
-              ===================================================== */}
+        <Footer
+          onOpenAdmin={() => setAdminOpen(true)}
+        />
 
-              <ReviewPopup />
+        {/* =====================================================
+            REVIEW POPUP
+        ===================================================== */}
 
-              {/* =====================================================
-                  FLOATING BUTTONS
-              ===================================================== */}
+        <ReviewPopup />
 
-              <FloatingButtons />
+        {/* =====================================================
+            FLOATING BUTTONS
+        ===================================================== */}
 
-              {/* =====================================================
-                  ADMIN PANEL
-              ===================================================== */}
+        <FloatingButtons />
 
-              {adminOpen && (
-                <AdminPanel
-                  onClose={() => setAdminOpen(false)}
-                />
-              )}
-            </>
-          )}
+        {/* =====================================================
+            ADMIN PANEL
+        ===================================================== */}
 
-        </div>
-  )
+        {adminOpen && (
+          <AdminPanel
+            onClose={() => setAdminOpen(false)}
+          />
+        )}
+
+      </>
+    )}
+
+  </div>
+)
 }
