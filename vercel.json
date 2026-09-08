@@ -11,6 +11,10 @@
     {
       "source": "/chatbot",
       "destination": "/"
+    },
+    {
+      "source": "/chat",
+      "destination": "/"
     }
   ]
 }
