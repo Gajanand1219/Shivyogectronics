@@ -649,15 +649,9 @@ export default function Chatbot() {
           role: 'assistant',
 
           content:
-            `⚠️ Backend connect होत नाहीये.
+                  `⚠️ सध्या AI Assistant Service उपलब्ध नाहीये.
 
-${error.message || 'FastAPI server check करा.'}
-
-Frontend proxy:
-${API_URL}
-
-FastAPI:
-http://127.0.0.1:8000`,
+                  कृपया तुमचा प्रश्न पुन्हा विचारा किंवा थोड्या वेळाने पुन्हा try करा. 🙏`,
         },
       ])
     } finally {
