@@ -10,7 +10,7 @@ import {
   MAPS_LINK,
 } from '../utils/contact'
 
-const API_URL = '/api'
+const API_URL = 'https://shivyogbackend-rizm.onrender.com'
 
 const INITIAL_SUGGESTIONS = [
   {
