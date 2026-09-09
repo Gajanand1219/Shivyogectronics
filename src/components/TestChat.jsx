@@ -352,7 +352,7 @@ export default function Chatbot() {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Namaskar! 👋 Mi Shivyog Electronics cha AI Assistant aahe. Products, prices, availability, services, wiring, inverter, DTH, shop timing किंवा location बद्दल काहीही विचारा.',
+        'Namaskar! 👋 Mi Shivyog Electrical cha AI Assistant aahe. Products, prices, availability, services, wiring, inverter, DTH, shop timing किंवा location बद्दल काहीही विचारा.',
       suggestions:
         INITIAL_SUGGESTIONS.slice(0, 5),
     },
@@ -1822,7 +1822,7 @@ ${API_URL}`,
                           >
                             {isUser
                               ? message.fromVoice
-                                ? '🎙️ You · Voice'
+                                ? '🎤 You · Voice'
                                 : '👤 You · Text'
                               : isSpeaking
                               ? '🗣️ AI · Speaking'
@@ -2043,7 +2043,7 @@ ${API_URL}`,
                             `}
                           >
                             {message.fromVoice
-                              ? '🎙️'
+                              ? '🎤'
                               : '👤'}
                           </div>
                         )}
@@ -2405,7 +2405,7 @@ ${API_URL}`,
                   >
                     {listening
                       ? '⏹'
-                      : '🎙️'}
+                      : '🎤'}
                   </button>
 
 
@@ -2453,7 +2453,7 @@ ${API_URL}`,
                     mt-1.5
                   "
                 >
-                  Enter to send · Shift + Enter for new line · 🎙️ voice बोलून थांबल्यावर automatically send होईल
+                  Enter to send · Shift + Enter for new line · 🎤 voice बोलून थांबल्यावर automatically send होईल
                 </div>
 
               </div>
