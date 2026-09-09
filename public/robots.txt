@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shivyogelectronics.vercel.app/sitemap.xml
+Sitemap: https://shivyogelectrical.vercel.app//sitemap.xml
