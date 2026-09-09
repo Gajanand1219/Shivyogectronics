@@ -12,7 +12,7 @@ export default function Navbar() {
   const [showMenuHint, setShowMenuHint] = useState(false)
 
   const links = [
-    { href: 'https://shivyogelectronics.vercel.app/', label: t('nav_home') },
+    { href: 'https://shivyogelectrical.vercel.app/', label: t('nav_home') },
     { href: '#products', label: t('nav_products') },
     { href: '#categories', label: t('nav_categories') },
     { href: '#services', label: t('nav_services') },
@@ -111,7 +111,7 @@ export default function Navbar() {
         {/* =====================================================
             LOGO
         ====================================================== */}
-        <a href="https://shivyogelectronics.vercel.app/" className="flex items-center gap-2 shrink-0">
+        <a href="https://shivyogelectrical.vercel.app/" className="flex items-center gap-2 shrink-0">
           <img
             src={logo}
             alt="Shivyoga Electrical & Electronics logo"
