@@ -10,8 +10,7 @@ import {
   MAPS_LINK,
 } from '../utils/contact'
 
-const API_URL =
-  'https://shivyogbackend-rizm.onrender.com'
+const API_URL = 'https://shivyogbackend-rizm.onrender.com'
 
 const INITIAL_SUGGESTIONS = [
   {
@@ -122,7 +121,18 @@ function DynamicAction({ action }) {
         href={telLink(
           action.phone || PHONE_NUMBERS[0]
         )}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-sm"
+        className="
+          flex items-center gap-2
+          px-4 py-2
+          rounded-xl
+          bg-blue-600
+          text-white
+          text-sm
+          font-semibold
+          hover:bg-blue-700
+          active:scale-95
+          transition
+        "
       >
         📞 {action.label || 'Call Shop'}
       </a>
@@ -138,7 +148,18 @@ function DynamicAction({ action }) {
         )}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition shadow-sm"
+        className="
+          flex items-center gap-2
+          px-4 py-2
+          rounded-xl
+          bg-green-500
+          text-white
+          text-sm
+          font-semibold
+          hover:bg-green-600
+          active:scale-95
+          transition
+        "
       >
         💬 {action.label || 'WhatsApp'}
       </a>
@@ -151,7 +172,18 @@ function DynamicAction({ action }) {
         href={action.url || MAPS_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition shadow-sm"
+        className="
+          flex items-center gap-2
+          px-4 py-2
+          rounded-xl
+          bg-red-500
+          text-white
+          text-sm
+          font-semibold
+          hover:bg-red-600
+          active:scale-95
+          transition
+        "
       >
         🗺️ {action.label || 'Directions'}
       </a>
@@ -164,7 +196,18 @@ function DynamicAction({ action }) {
         href={action.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition shadow-sm"
+        className="
+          flex items-center gap-2
+          px-4 py-2
+          rounded-xl
+          bg-indigo-600
+          text-white
+          text-sm
+          font-semibold
+          hover:bg-indigo-700
+          active:scale-95
+          transition
+        "
       >
         🔗 {action.label || 'Open'}
       </a>
@@ -175,106 +218,94 @@ function DynamicAction({ action }) {
 }
 
 /* =========================================================
-   PHONE NUMBER SPEECH
+   PHONE NUMBER → ENGLISH DIGITS
 ========================================================= */
 
-const DIGITS = {
-  0: 'zero',
-  1: 'one',
-  2: 'two',
-  3: 'three',
-  4: 'four',
-  5: 'five',
-  6: 'six',
-  7: 'seven',
-  8: 'eight',
-  9: 'nine',
-}
+function numberToEnglishDigits(value = '') {
+  const digitWords = {
+    0: 'zero',
+    1: 'one',
+    2: 'two',
+    3: 'three',
+    4: 'four',
+    5: 'five',
+    6: 'six',
+    7: 'seven',
+    8: 'eight',
+    9: 'nine',
+  }
 
-/*
-  Phone number:
-  9876543210
-  =>
-  nine eight seven six five four three two one zero
-*/
-
-function numberToEnglishDigits(value) {
-  const digits = String(value).replace(/\D/g, '')
-
-  if (!digits) return value
-
-  return digits
+  return value
     .split('')
-    .map((digit) => DIGITS[digit])
+    .map((digit) => digitWords[digit] || digit)
     .join(' ')
 }
 
 /* =========================================================
-   CLEAN TEXT FOR SPEECH
+   SPEECH TEXT CLEANER
 ========================================================= */
 
-function prepareSpeechText(text) {
-  let clean = String(text || '')
+function prepareSpeechText(text = '') {
+  let result = String(text)
 
-  // Markdown
-  clean = clean.replace(/\*\*/g, '')
-  clean = clean.replace(/[#*_~]/g, '')
-
-  // Markdown links
-  clean = clean.replace(
-    /\[(.*?)\]\(.*?\)/g,
+  // Bold markdown
+  result = result.replace(
+    /\*\*(.*?)\*\*/g,
     '$1'
   )
 
-  // URLs
-  clean = clean.replace(
-    /https?:\/\/[^\s]+/gi,
+  // Markdown links
+  result = result.replace(
+    /\[(.*?)\]\((.*?)\)/g,
+    '$1'
+  )
+
+  // Remove URLs
+  result = result.replace(
+    /https?:\/\/\S+/gi,
     ''
   )
 
   /*
-    Indian mobile numbers.
-    10 digits starting with 6-9.
+    Phone numbers:
+    9876543210
+    +91 9876543210
+    +91-9876543210
   */
-  clean = clean.replace(
-    /(?<!\d)([6-9]\d{9})(?!\d)/g,
-    (match) =>
-      ` ${numberToEnglishDigits(match)} `
-  )
 
-  /*
-    +91 phone number
-  */
-  clean = clean.replace(
-    /(?:\+91[\s-]?)?([6-9]\d{9})/g,
-    (full, number) => {
-      return ` nine one ${numberToEnglishDigits(
-        number
-      )} `
+  result = result.replace(
+    /(?:\+91[\s-]?)?[6-9]\d{9}/g,
+    (match) => {
+      const digits = match.replace(/\D/g, '')
+
+      const cleanDigits =
+        digits.length === 12 &&
+        digits.startsWith('91')
+          ? digits.slice(2)
+          : digits
+
+      return numberToEnglishDigits(
+        cleanDigits
+      )
     }
   )
 
-  /*
-    Common symbols.
-  */
-  clean = clean
-    .replace(/₹/g, ' rupees ')
-    .replace(/%/g, ' percent ')
-    .replace(/&/g, ' and ')
-    .replace(/\//g, ' slash ')
-    .replace(/-/g, ' ')
+  result = result.replace(/₹/g, ' rupees ')
+  result = result.replace(/%/g, ' percent ')
+  result = result.replace(/&/g, ' and ')
+  result = result.replace(/\//g, ' slash ')
 
-  /*
-    Better pauses.
-  */
-  clean = clean
-    .replace(/\.\.\./g, '... ')
-    .replace(/:/g, ': ')
-    .replace(/;/g, '; ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  result = result.replace(
+    /[#*_`|]/g,
+    ' '
+  )
 
-  return clean
+  result = result.replace(
+    /\s+/g,
+    ' '
+  )
+
+  return result.trim()
 }
 
 /* =========================================================
@@ -282,43 +313,31 @@ function prepareSpeechText(text) {
 ========================================================= */
 
 function getVoiceLabel(voice) {
-  if (!voice) return 'Default browser voice'
+  if (!voice) return ''
 
-  return `${voice.name} · ${voice.lang}`
+  return `${voice.name} (${voice.lang})`
 }
 
 function voiceScore(voice) {
-  if (!voice) return 0
-
   const lang =
-    String(voice.lang || '').toLowerCase()
+    (voice.lang || '').toLowerCase()
 
   const name =
-    String(voice.name || '').toLowerCase()
+    (voice.name || '').toLowerCase()
 
   let score = 0
 
-  // Strong preference for Indian voices
   if (lang === 'mr-in') score += 100
   if (lang.startsWith('mr')) score += 90
 
-  if (lang === 'hi-in') score += 85
-  if (lang.startsWith('hi')) score += 80
+  if (lang === 'hi-in') score += 80
+  if (lang.startsWith('hi')) score += 70
 
-  if (lang === 'en-in') score += 75
-  if (lang.startsWith('en-in')) score += 70
+  if (lang === 'en-in') score += 65
+  if (lang.startsWith('en')) score += 50
 
-  // Useful Google / Microsoft voices
   if (name.includes('google')) score += 15
-  if (name.includes('microsoft')) score += 15
-
-  // Avoid some robotic-looking defaults where possible
-  if (
-    name.includes('compact') ||
-    name.includes('espeak')
-  ) {
-    score -= 10
-  }
+  if (name.includes('microsoft')) score += 10
 
   return score
 }
@@ -340,9 +359,7 @@ export default function Chatbot() {
   ])
 
   const [input, setInput] = useState('')
-
-  const [loading, setLoading] =
-    useState(false)
+  const [loading, setLoading] = useState(false)
 
   const [listening, setListening] =
     useState(false)
@@ -350,47 +367,26 @@ export default function Chatbot() {
   const [speaking, setSpeaking] =
     useState(false)
 
-  const [speakingMessageId, setSpeakingMessageId] =
-    useState(null)
+  const [
+    speakingMessageId,
+    setSpeakingMessageId,
+  ] = useState(null)
 
   const [online, setOnline] =
     useState(false)
 
-  /* =======================================================
-     VOICES
-  ======================================================= */
+  const [voices, setVoices] =
+    useState([])
 
-  const [voices, setVoices] = useState([])
+  const [
+    selectedVoiceName,
+    setSelectedVoiceName,
+  ] = useState('')
 
-  const [selectedVoiceName, setSelectedVoiceName] =
-    useState(() => {
-      try {
-        return (
-          localStorage.getItem(
-            'shivyog_selected_voice'
-          ) || ''
-        )
-      } catch {
-        return ''
-      }
-    })
-
-  const [fallbackVoiceName, setFallbackVoiceName] =
-    useState(() => {
-      try {
-        return (
-          localStorage.getItem(
-            'shivyog_fallback_voice'
-          ) || ''
-        )
-      } catch {
-        return ''
-      }
-    })
-
-  /* =======================================================
-     REFS
-  ======================================================= */
+  const [
+    fallbackVoiceName,
+    setFallbackVoiceName,
+  ] = useState('')
 
   const recognitionRef =
     useRef(null)
@@ -404,17 +400,17 @@ export default function Chatbot() {
   const messagesEndRef =
     useRef(null)
 
-  /* =======================================================
+  /* =========================================================
      KEEP LOADING REF UPDATED
-  ======================================================= */
+  ========================================================= */
 
   useEffect(() => {
     loadingRef.current = loading
   }, [loading])
 
-  /* =======================================================
+  /* =========================================================
      CHECK BACKEND
-  ======================================================= */
+  ========================================================= */
 
   async function checkBackend() {
     try {
@@ -443,152 +439,30 @@ export default function Chatbot() {
     }
   }
 
-  /* =======================================================
-     LOAD BROWSER VOICES
-  ======================================================= */
-
-  function loadVoices() {
-    if (
-      !('speechSynthesis' in window)
-    ) {
-      return
-    }
-
-    const available =
-      window.speechSynthesis.getVoices()
-
-    if (!available.length) return
-
-    const sorted = [...available].sort(
-      (a, b) =>
-        voiceScore(b) - voiceScore(a)
-    )
-
-    setVoices(sorted)
-
-    /*
-      First time:
-      automatically choose best Indian voice.
-    */
-    setSelectedVoiceName((current) => {
-      if (
-        current &&
-        available.some(
-          (voice) =>
-            voice.name === current
-        )
-      ) {
-        return current
-      }
-
-      const best = sorted[0]
-
-      if (!best) return ''
-
-      try {
-        localStorage.setItem(
-          'shivyog_selected_voice',
-          best.name
-        )
-      } catch {}
-
-      return best.name
-    })
-
-    /*
-      Fallback voice
-    */
-    setFallbackVoiceName((current) => {
-      if (
-        current &&
-        available.some(
-          (voice) =>
-            voice.name === current
-        )
-      ) {
-        return current
-      }
-
-      /*
-        Find a different voice from
-        primary voice if possible.
-      */
-      const fallback =
-        sorted.find(
-          (voice) =>
-            voice.name !==
-            selectedVoiceName
-        ) || sorted[1] || sorted[0]
-
-      if (!fallback) return ''
-
-      try {
-        localStorage.setItem(
-          'shivyog_fallback_voice',
-          fallback.name
-        )
-      } catch {}
-
-      return fallback.name
-    })
-  }
-
-  /* =======================================================
+  /* =========================================================
      VOICE INITIALIZATION
-  ======================================================= */
+  ========================================================= */
 
   useEffect(() => {
     checkBackend()
-
-    /*
-      Load voices.
-    */
-    loadVoices()
-
-    if (
-      'speechSynthesis' in window
-    ) {
-      window.speechSynthesis.onvoiceschanged =
-        loadVoices
-    }
 
     const SpeechRecognition =
       window.SpeechRecognition ||
       window.webkitSpeechRecognition
 
     if (!SpeechRecognition) {
-      return () => {
-        if (
-          'speechSynthesis' in
-          window
-        ) {
-          window.speechSynthesis.onvoiceschanged =
-            null
-        }
-      }
+      return
     }
 
     const recognition =
       new SpeechRecognition()
 
-    /*
-      One voice session at a time.
-    */
     recognition.continuous = false
-
-    /*
-      Interim + final results.
-    */
     recognition.interimResults = true
 
-    /*
-      Marathi recognition.
-    */
+    // Marathi + Indian mixed speech
     recognition.lang = 'mr-IN'
 
-    /*
-      Better confidence.
-    */
     recognition.maxAlternatives = 1
 
     recognition.onstart = () => {
@@ -598,9 +472,7 @@ export default function Chatbot() {
         ''
     }
 
-    recognition.onresult = (
-      event
-    ) => {
+    recognition.onresult = (event) => {
       let transcript = ''
 
       for (
@@ -624,9 +496,7 @@ export default function Chatbot() {
       }
     }
 
-    recognition.onerror = (
-      event
-    ) => {
+    recognition.onerror = (event) => {
       console.error(
         'Speech recognition error:',
         event.error
@@ -648,9 +518,13 @@ export default function Chatbot() {
 
     /*
       IMPORTANT:
-      Voice stops =>
-      automatically send.
+
+      Voice बोलून थांबल्यावर:
+      transcript → sendMessage(..., true)
+
+      true = voice input
     */
+
     recognition.onend = () => {
       setListening(false)
 
@@ -681,62 +555,108 @@ export default function Chatbot() {
         recognition.stop()
       } catch {}
 
-      if (
-        'speechSynthesis' in window
-      ) {
-        window.speechSynthesis.cancel()
-        window.speechSynthesis.onvoiceschanged =
-          null
-      }
+      window.speechSynthesis?.cancel()
     }
   }, [])
 
-  /* =======================================================
-     SCROLL
-  ======================================================= */
+  /* =========================================================
+     LOAD SPEECH SYNTHESIS VOICES
+  ========================================================= */
+
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) {
+      return
+    }
+
+    function loadVoices() {
+      const available =
+        window.speechSynthesis.getVoices()
+
+      if (!available.length) return
+
+      const sorted = [
+        ...available,
+      ].sort(
+        (a, b) =>
+          voiceScore(b) -
+          voiceScore(a)
+      )
+
+      setVoices(sorted)
+
+      const savedPrimary =
+        localStorage.getItem(
+          'shivyog_primary_voice'
+        )
+
+      const savedFallback =
+        localStorage.getItem(
+          'shivyog_fallback_voice'
+        )
+
+      const primaryExists =
+        sorted.some(
+          (voice) =>
+            voice.name ===
+            savedPrimary
+        )
+
+      const fallbackExists =
+        sorted.some(
+          (voice) =>
+            voice.name ===
+            savedFallback
+        )
+
+      setSelectedVoiceName(
+        primaryExists
+          ? savedPrimary
+          : sorted[0]?.name || ''
+      )
+
+      setFallbackVoiceName(
+        fallbackExists
+          ? savedFallback
+          : sorted[1]?.name ||
+              sorted[0]?.name ||
+              ''
+      )
+    }
+
+    loadVoices()
+
+    window.speechSynthesis.addEventListener(
+      'voiceschanged',
+      loadVoices
+    )
+
+    return () => {
+      window.speechSynthesis.removeEventListener(
+        'voiceschanged',
+        loadVoices
+      )
+    }
+  }, [])
+
+  /* =========================================================
+     INNER CHAT AUTO SCROLL
+  ========================================================= */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView(
       {
         behavior: 'smooth',
+        block: 'end',
       }
     )
   }, [messages, loading])
 
-  /* =======================================================
-     SAVE VOICE SETTINGS
-  ======================================================= */
-
-  useEffect(() => {
-    try {
-      if (selectedVoiceName) {
-        localStorage.setItem(
-          'shivyog_selected_voice',
-          selectedVoiceName
-        )
-      }
-    } catch {}
-  }, [selectedVoiceName])
-
-  useEffect(() => {
-    try {
-      if (fallbackVoiceName) {
-        localStorage.setItem(
-          'shivyog_fallback_voice',
-          fallbackVoiceName
-        )
-      }
-    } catch {}
-  }, [fallbackVoiceName])
-
-  /* =======================================================
-     START / STOP VOICE INPUT
-  ======================================================= */
+  /* =========================================================
+     START / STOP VOICE
+  ========================================================= */
 
   function startVoice() {
-    if (
-      !recognitionRef.current
-    ) {
+    if (!recognitionRef.current) {
       alert(
         'Voice input तुमच्या browser मध्ये supported नाही. Chrome वापरा.'
       )
@@ -744,26 +664,12 @@ export default function Chatbot() {
       return
     }
 
-    if (loading) return
+    // Stop currently speaking answer
+    stopSpeaking()
 
     if (listening) {
-      try {
-        recognitionRef.current.stop()
-      } catch {}
-
+      recognitionRef.current.stop()
       return
-    }
-
-    /*
-      Stop current bot speech
-      before listening.
-    */
-    if (
-      'speechSynthesis' in window
-    ) {
-      window.speechSynthesis.cancel()
-      setSpeaking(false)
-      setSpeakingMessageId(null)
     }
 
     voiceTranscriptRef.current =
@@ -781,13 +687,11 @@ export default function Chatbot() {
     }
   }
 
-  /* =======================================================
-     GET SELECTED / FALLBACK VOICE
-  ======================================================= */
+  /* =========================================================
+     GET SELECTED VOICES
+  ========================================================= */
 
   function getSelectedVoice() {
-    if (!voices.length) return null
-
     return (
       voices.find(
         (voice) =>
@@ -798,112 +702,18 @@ export default function Chatbot() {
   }
 
   function getFallbackVoice() {
-    if (!voices.length) return null
-
     return (
       voices.find(
         (voice) =>
           voice.name ===
           fallbackVoiceName
-      ) ||
-      voices.find(
-        (voice) =>
-          voice.name !==
-          selectedVoiceName
-      ) ||
-      voices[0] ||
-      null
+      ) || null
     )
   }
 
-  /* =======================================================
-     SELECT BEST VOICE FOR LANGUAGE
-  ======================================================= */
-
-  function getBestVoiceForText(
-    text
-  ) {
-    const selected =
-      getSelectedVoice()
-
-    const fallback =
-      getFallbackVoice()
-
-    if (!text) {
-      return (
-        selected ||
-        fallback ||
-        voices[0] ||
-        null
-      )
-    }
-
-    /*
-      User manually selected voice
-      should remain the main voice.
-    */
-    if (selected) {
-      return selected
-    }
-
-    /*
-      Automatic fallback.
-    */
-    const lower =
-      String(text).toLowerCase()
-
-    const hasMarathi =
-      /[\u0900-\u097F]/.test(text)
-
-    if (hasMarathi) {
-      const marathi =
-        voices.find((voice) =>
-          String(voice.lang)
-            .toLowerCase()
-            .startsWith('mr')
-        )
-
-      if (marathi) return marathi
-    }
-
-    /*
-      English / numbers.
-    */
-    if (
-      /[a-z]/i.test(lower)
-    ) {
-      const englishIndia =
-        voices.find(
-          (voice) =>
-            String(voice.lang)
-              .toLowerCase() ===
-            'en-in'
-        )
-
-      if (englishIndia) {
-        return englishIndia
-      }
-
-      const english =
-        voices.find((voice) =>
-          String(voice.lang)
-            .toLowerCase()
-            .startsWith('en')
-        )
-
-      if (english) return english
-    }
-
-    return (
-      fallback ||
-      voices[0] ||
-      null
-    )
-  }
-
-  /* =======================================================
-     SMART TEXT TO SPEECH
-  ======================================================= */
+  /* =========================================================
+     SPEAK ANSWER
+  ========================================================= */
 
   function speakAnswer(
     text,
@@ -912,150 +722,56 @@ export default function Chatbot() {
     if (
       !('speechSynthesis' in window)
     ) {
-      alert(
-        'Your browser does not support text-to-speech.'
-      )
       return
     }
-
-    if (!text) return
-
-    /*
-      If same message is speaking:
-      STOP.
-    */
-    if (
-      speaking &&
-      speakingMessageId ===
-        messageId
-    ) {
-      stopSpeaking()
-      return
-    }
-
-    /*
-      Stop any previous speech.
-    */
-    window.speechSynthesis.cancel()
-
-    setSpeaking(false)
-    setSpeakingMessageId(null)
 
     const cleanText =
       prepareSpeechText(text)
 
     if (!cleanText) return
 
-    /*
-      Main selected voice.
-    */
-    const primaryVoice =
-      getBestVoiceForText(
-        cleanText
-      )
-
-    const fallbackVoice =
-      getFallbackVoice()
-
-    /*
-      Split answer into natural chunks.
-      This makes long answers feel
-      less robotic.
-    */
-    const chunks =
-      cleanText
-        .split(
-          /(?<=[.!?।])\s+/
-        )
-        .map((item) =>
-          item.trim()
-        )
-        .filter(Boolean)
-
-    /*
-      If sentence splitting fails,
-      speak whole answer.
-    */
-    const finalChunks =
-      chunks.length
-        ? chunks
-        : [cleanText]
-
-    let currentIndex = 0
+    window.speechSynthesis.cancel()
 
     setSpeaking(true)
     setSpeakingMessageId(
       messageId
     )
 
+    /*
+      Sentence-by-sentence speech
+      makes speech more natural.
+    */
+
+    const chunks =
+      cleanText.match(
+        /[^.!?]+[.!?]+|[^.!?]+$/g
+      ) || [cleanText]
+
+    const primaryVoice =
+      getSelectedVoice()
+
+    const fallbackVoice =
+      getFallbackVoice()
+
+    let currentIndex = 0
+
     function speakNext() {
       if (
         currentIndex >=
-        finalChunks.length
+        chunks.length
       ) {
         setSpeaking(false)
-        setSpeakingMessageId(
-          null
-        )
+        setSpeakingMessageId(null)
         return
       }
 
       const chunk =
-        finalChunks[currentIndex]
+        chunks[currentIndex].trim()
 
-      currentIndex++
-
-      /*
-        Phone numbers and English
-        words are spoken naturally
-        using English-capable voice
-        when fallback is better.
-      */
-      const hasEnglish =
-        /[a-z]/i.test(chunk)
-
-      let voice =
-        primaryVoice ||
-        fallbackVoice
-
-      /*
-        If selected voice is Marathi
-        but chunk contains mainly
-        English, fallback to English
-        voice only when available.
-        
-        Phone numbers are already
-        converted to English words.
-      */
-      if (hasEnglish) {
-        const englishVoice =
-          voices.find(
-            (item) =>
-              String(item.lang)
-                .toLowerCase() ===
-              'en-in'
-          ) ||
-          voices.find((item) =>
-            String(item.lang)
-              .toLowerCase()
-              .startsWith('en')
-          )
-
-        /*
-          Use English voice only if
-          selected voice is not English.
-        */
-        if (
-          englishVoice &&
-          primaryVoice &&
-          !String(
-            primaryVoice.lang
-          )
-            .toLowerCase()
-            .startsWith('en')
-        ) {
-          voice = englishVoice
-        }
+      if (!chunk) {
+        currentIndex++
+        speakNext()
+        return
       }
 
       const utterance =
@@ -1063,17 +779,54 @@ export default function Chatbot() {
           chunk
         )
 
-      if (voice) {
-        utterance.voice = voice
-        utterance.lang =
-          voice.lang
-      } else {
-        utterance.lang = 'mr-IN'
-      }
+      let voiceToUse =
+        primaryVoice
 
       /*
-        Human-like settings.
+        English text / phone numbers:
+        prefer Indian English voice
       */
+
+      const containsEnglish =
+        /[a-zA-Z]/.test(chunk)
+
+      if (
+        containsEnglish &&
+        primaryVoice &&
+        !primaryVoice.lang
+          .toLowerCase()
+          .startsWith('en')
+      ) {
+        const englishIndianVoice =
+          voices.find(
+            (voice) =>
+              voice.lang
+                .toLowerCase()
+                .startsWith(
+                  'en-in'
+                )
+          )
+
+        const englishVoice =
+          englishIndianVoice ||
+          voices.find(
+            (voice) =>
+              voice.lang
+                .toLowerCase()
+                .startsWith('en')
+          )
+
+        if (englishVoice) {
+          voiceToUse =
+            englishVoice
+        }
+      }
+
+      utterance.voice =
+        voiceToUse ||
+        fallbackVoice ||
+        null
+
       utterance.rate = 0.92
       utterance.pitch = 1.02
       utterance.volume = 1
@@ -1086,77 +839,55 @@ export default function Chatbot() {
       }
 
       utterance.onend = () => {
-        /*
-          Small natural pause
-          between sentences.
-        */
+        currentIndex++
+
         setTimeout(() => {
           speakNext()
         }, 90)
       }
 
-      utterance.onerror = (
-        error
-      ) => {
-        console.error(
-          'Speech synthesis error:',
-          error
-        )
-
+      utterance.onerror = () => {
         /*
-          Try fallback voice.
+          Fallback voice
         */
+
         if (
           fallbackVoice &&
-          voice?.name !==
+          utterance.voice?.name !==
             fallbackVoice.name
         ) {
-          const fallbackUtterance =
+          const retry =
             new SpeechSynthesisUtterance(
               chunk
             )
 
-          fallbackUtterance.voice =
+          retry.voice =
             fallbackVoice
 
-          fallbackUtterance.lang =
-            fallbackVoice.lang
+          retry.rate = 0.92
+          retry.pitch = 1.02
+          retry.volume = 1
 
-          fallbackUtterance.rate =
-            0.92
+          retry.onend = () => {
+            currentIndex++
 
-          fallbackUtterance.pitch =
-            1.02
+            setTimeout(() => {
+              speakNext()
+            }, 90)
+          }
 
-          fallbackUtterance.volume = 1
-
-          fallbackUtterance.onend =
-            () => {
-              setTimeout(
-                speakNext,
-                90
-              )
-            }
-
-          fallbackUtterance.onerror =
-            () => {
-              setSpeaking(false)
-              setSpeakingMessageId(
-                null
-              )
-            }
+          retry.onerror = () => {
+            currentIndex++
+            speakNext()
+          }
 
           window.speechSynthesis.speak(
-            fallbackUtterance
+            retry
           )
-
-          return
+        } else {
+          currentIndex++
+          speakNext()
         }
-
-        setSpeaking(false)
-        setSpeakingMessageId(
-          null
-        )
       }
 
       window.speechSynthesis.speak(
@@ -1167,9 +898,9 @@ export default function Chatbot() {
     speakNext()
   }
 
-  /* =======================================================
+  /* =========================================================
      STOP SPEAKING
-  ======================================================= */
+  ========================================================= */
 
   function stopSpeaking() {
     if (
@@ -1182,9 +913,41 @@ export default function Chatbot() {
     setSpeakingMessageId(null)
   }
 
-  /* =======================================================
+  /* =========================================================
+     CHANGE VOICE
+  ========================================================= */
+
+  function handlePrimaryVoiceChange(
+    event
+  ) {
+    const value =
+      event.target.value
+
+    setSelectedVoiceName(value)
+
+    localStorage.setItem(
+      'shivyog_primary_voice',
+      value
+    )
+  }
+
+  function handleFallbackVoiceChange(
+    event
+  ) {
+    const value =
+      event.target.value
+
+    setFallbackVoiceName(value)
+
+    localStorage.setItem(
+      'shivyog_fallback_voice',
+      value
+    )
+  }
+
+  /* =========================================================
      SEND MESSAGE
-  ======================================================= */
+  ========================================================= */
 
   async function sendMessage(
     customText = '',
@@ -1196,29 +959,34 @@ export default function Chatbot() {
 
     if (
       !question ||
-      loadingRef.current
+      loading
     ) {
       return
     }
 
     /*
-      If voice request:
-      stop recognition state.
+      Stop previous answer speech
     */
-    if (fromVoice) {
-      setListening(false)
-    }
+
+    stopSpeaking()
 
     setInput('')
 
     const userMessage = {
       id:
-        Date.now(),
+        `user-${Date.now()}`,
+
       role: 'user',
+
       content: question,
-      fromVoice: Boolean(
-        fromVoice
-      ),
+
+      /*
+        Important:
+        identify voice/text user
+      */
+
+      fromVoice:
+        Boolean(fromVoice),
     }
 
     setMessages((prev) => [
@@ -1227,7 +995,6 @@ export default function Chatbot() {
     ])
 
     setLoading(true)
-    loadingRef.current = true
 
     try {
       const response =
@@ -1255,9 +1022,7 @@ export default function Chatbot() {
           const errorData =
             await response.json()
 
-          if (
-            errorData.detail
-          ) {
+          if (errorData.detail) {
             errorMessage =
               errorData.detail
           }
@@ -1277,7 +1042,7 @@ export default function Chatbot() {
 
       const botMessage = {
         id:
-          Date.now() + 1,
+          `bot-${Date.now()}`,
 
         role: 'assistant',
 
@@ -1307,22 +1072,18 @@ export default function Chatbot() {
       setOnline(true)
 
       /*
-        ====================================================
-        ⭐ IMPORTANT BEHAVIOUR ⭐
+        ⭐ IMPORTANT FUNCTIONALITY ⭐
 
-        TEXT USER:
-        No automatic voice.
+        TEXT INPUT:
+        fromVoice = false
+        → NO AUTO SPEECH
 
-        VOICE USER:
-        Automatically speak bot answer.
-        ====================================================
+        VOICE INPUT:
+        fromVoice = true
+        → AUTO SPEECH
       */
 
       if (fromVoice) {
-        /*
-          Wait until React renders
-          the bot message.
-        */
         setTimeout(() => {
           speakAnswer(
             answer,
@@ -1342,7 +1103,7 @@ export default function Chatbot() {
         ...prev,
         {
           id:
-            Date.now() + 2,
+            `error-${Date.now()}`,
 
           role: 'assistant',
 
@@ -1357,13 +1118,12 @@ ${API_URL}`,
       ])
     } finally {
       setLoading(false)
-      loadingRef.current = false
     }
   }
 
-  /* =======================================================
+  /* =========================================================
      DYNAMIC SUGGESTIONS
-  ======================================================= */
+  ========================================================= */
 
   function generateSuggestions(
     question
@@ -1539,36 +1299,31 @@ ${API_URL}`,
     ]
   }
 
-  /* =======================================================
+  /* =========================================================
      CLEAR CHAT
-  ======================================================= */
+  ========================================================= */
 
   function clearChat() {
-    if (
-      'speechSynthesis' in window
-    ) {
-      window.speechSynthesis.cancel()
-    }
+    stopSpeaking()
 
-    if (
-      recognitionRef.current
-    ) {
+    if (recognitionRef.current) {
       try {
         recognitionRef.current.stop()
       } catch {}
     }
 
     setSpeaking(false)
-    setSpeakingMessageId(null)
     setListening(false)
 
     voiceTranscriptRef.current =
       ''
 
+    setInput('')
+
     setMessages([
       {
         id:
-          Date.now(),
+          `welcome-${Date.now()}`,
 
         role: 'assistant',
 
@@ -1584,9 +1339,9 @@ ${API_URL}`,
     ])
   }
 
-  /* =======================================================
+  /* =========================================================
      ENTER KEY
-  ======================================================= */
+  ========================================================= */
 
   function handleKeyDown(e) {
     if (
@@ -1599,180 +1354,315 @@ ${API_URL}`,
     }
   }
 
-  /* =======================================================
-     VOICE SELECTOR
-  ======================================================= */
-
-  function VoiceSettings() {
-    return (
-      <div className="mt-3 p-3 rounded-2xl bg-white/10 border border-white/10 backdrop-blur">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-
-          {/* PRIMARY VOICE */}
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-wider text-white/70 mb-1">
-              🎤 Main Voice
-            </label>
-
-            <select
-              value={selectedVoiceName}
-              onChange={(e) =>
-                setSelectedVoiceName(
-                  e.target.value
-                )
-              }
-              className="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs outline-none"
-            >
-              {voices.length === 0 && (
-                <option
-                  value=""
-                  className="text-slate-900"
-                >
-                  Loading voices...
-                </option>
-              )}
-
-              {voices.map(
-                (voice) => (
-                  <option
-                    key={`${voice.name}-${voice.lang}`}
-                    value={voice.name}
-                    className="text-slate-900"
-                  >
-                    {getVoiceLabel(
-                      voice
-                    )}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-
-          {/* FALLBACK */}
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-wider text-white/70 mb-1">
-              🔄 Fallback Voice
-            </label>
-
-            <select
-              value={fallbackVoiceName}
-              onChange={(e) =>
-                setFallbackVoiceName(
-                  e.target.value
-                )
-              }
-              className="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs outline-none"
-            >
-              {voices.length === 0 && (
-                <option
-                  value=""
-                  className="text-slate-900"
-                >
-                  Loading voices...
-                </option>
-              )}
-
-              {voices.map(
-                (voice) => (
-                  <option
-                    key={`fallback-${voice.name}-${voice.lang}`}
-                    value={voice.name}
-                    className="text-slate-900"
-                  >
-                    {getVoiceLabel(
-                      voice
-                    )}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-        </div>
-
-        <div className="mt-2 text-[10px] text-white/60">
-          Main voice manually select करा. Voice unavailable असल्यास fallback voice वापरला जाईल.
-        </div>
-      </div>
-    )
-  }
-
-  /* =======================================================
+  /* =========================================================
      RENDER
-  ======================================================= */
+  ========================================================= */
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-14 md:pb-0">
+    /*
+      ⭐ FULL SCREEN MOVIE STYLE
+
+      Outer scroll = OFF
+      Inner messages scroll = ON
+    */
+
+    <div
+      className="
+        fixed
+        inset-0
+        h-[100dvh]
+        w-full
+        overflow-hidden
+        bg-slate-50
+        flex
+        flex-col
+      "
+    >
 
       {/* =====================================================
-          NAVBAR
+          EXISTING SHOP NAVBAR
       ===================================================== */}
 
-      <Navbar />
+      <div className="flex-shrink-0 z-50">
+        <Navbar />
+      </div>
+
 
       {/* =====================================================
-          HEADER
+          CHATBOT MAIN
       ===================================================== */}
 
-      <section className="pt-20">
+      <section
+        className="
+          flex-1
+          min-h-0
+          overflow-hidden
+          flex
+          flex-col
+          pt-16
+          md:pt-20
+        "
+      >
 
-        <div className="bg-gradient-to-r from-indigo-700 via-blue-600 to-sky-500 text-white">
+        {/* =================================================
+            CHATBOT HEADER
+        ================================================= */}
 
-          <div className="max-w-6xl mx-auto px-4 py-7">
+        <div
+          className="
+            flex-shrink-0
+            bg-gradient-to-r
+            from-indigo-700
+            via-blue-600
+            to-sky-500
+            text-white
+          "
+        >
 
-            <div className="flex items-center justify-between gap-4">
+          <div
+            className="
+              max-w-6xl
+              mx-auto
+              px-3
+              md:px-4
+              py-3
+              md:py-5
+            "
+          >
 
-              <div className="flex items-center gap-3">
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                gap-3
+              "
+            >
+
+              {/* LEFT */}
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-2.5
+                  min-w-0
+                "
+              >
 
                 <div
-                  className={`h-12 w-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center text-2xl shadow-lg transition-all ${
-                    speaking
-                      ? 'scale-110 shadow-2xl animate-pulse'
-                      : ''
-                  }`}
+                  className="
+                    h-10
+                    w-10
+                    md:h-12
+                    md:w-12
+                    flex-shrink-0
+                    rounded-2xl
+                    bg-white/15
+                    backdrop-blur
+                    flex
+                    items-center
+                    justify-center
+                    text-xl
+                    md:text-2xl
+                    shadow-lg
+                  "
                 >
-                  {speaking
-                    ? '🗣️'
-                    : '🤖'}
+                  🤖
                 </div>
 
-                <div>
-                  <h1 className="text-xl md:text-2xl font-bold">
+                <div className="min-w-0">
+
+                  <h1
+                    className="
+                      text-base
+                      md:text-2xl
+                      font-bold
+                      truncate
+                    "
+                  >
                     Shivyog AI Assistant
                   </h1>
 
-  
+                  <p
+                    className="
+                      text-[10px]
+                      md:text-sm
+                      text-white/80
+                    "
+                  >
+                    Products · Services · Support
+                  </p>
+
                 </div>
 
               </div>
 
-              <div className="flex items-center gap-2">
+
+              {/* RIGHT */}
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-1.5
+                  md:gap-2
+                  flex-shrink-0
+                "
+              >
+
+                {/* VOICE SELECT DESKTOP */}
+
+                {voices.length > 0 && (
+                  <div
+                    className="
+                      hidden
+                      lg:flex
+                      items-center
+                      gap-2
+                    "
+                  >
+
+                    <select
+                      value={
+                        selectedVoiceName
+                      }
+                      onChange={
+                        handlePrimaryVoiceChange
+                      }
+                      className="
+                        max-w-[180px]
+                        rounded-lg
+                        bg-white
+                        text-slate-700
+                        px-2
+                        py-1.5
+                        text-xs
+                        outline-none
+                      "
+                    >
+                      {voices.map(
+                        (voice) => (
+                          <option
+                            key={
+                              `main-${voice.name}-${voice.lang}`
+                            }
+                            value={
+                              voice.name
+                            }
+                          >
+                            Main:{' '}
+                            {getVoiceLabel(
+                              voice
+                            )}
+                          </option>
+                        )
+                      )}
+                    </select>
+
+                    <select
+                      value={
+                        fallbackVoiceName
+                      }
+                      onChange={
+                        handleFallbackVoiceChange
+                      }
+                      className="
+                        max-w-[180px]
+                        rounded-lg
+                        bg-white
+                        text-slate-700
+                        px-2
+                        py-1.5
+                        text-xs
+                        outline-none
+                      "
+                    >
+                      {voices.map(
+                        (voice) => (
+                          <option
+                            key={
+                              `fallback-${voice.name}-${voice.lang}`
+                            }
+                            value={
+                              voice.name
+                            }
+                          >
+                            Fallback:{' '}
+                            {getVoiceLabel(
+                              voice
+                            )}
+                          </option>
+                        )
+                      )}
+                    </select>
+
+                  </div>
+                )}
+
+
+                {/* ONLINE */}
 
                 <div
-                  className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs font-semibold ${
-                    online
-                      ? 'bg-green-400/20 text-white'
-                      : 'bg-red-400/20 text-white'
-                  }`}
+                  className={`
+                    flex
+                    items-center
+                    gap-1.5
+                    px-2
+                    md:px-3
+                    py-1.5
+                    md:py-2
+                    rounded-full
+                    text-[10px]
+                    md:text-xs
+                    font-semibold
+                    ${
+                      online
+                        ? 'bg-green-400/20'
+                        : 'bg-red-400/20'
+                    }
+                  `}
                 >
 
                   <span
-                    className={`h-2 w-2 rounded-full ${
-                      online
-                        ? 'bg-green-300 animate-pulse'
-                        : 'bg-red-300'
-                    }`}
+                    className={`
+                      h-2
+                      w-2
+                      rounded-full
+                      ${
+                        online
+                          ? 'bg-green-300'
+                          : 'bg-red-300'
+                      }
+                    `}
                   />
 
-                  {online
-                    ? 'AI Online'
-                    : 'Offline'}
+                  <span className="hidden sm:inline">
+                    {online
+                      ? 'AI Online'
+                      : 'Offline'}
+                  </span>
+
                 </div>
 
+
+                {/* CLEAR */}
+
                 <button
-                  onClick={clearChat}
-                  className="h-10 w-10 rounded-xl bg-white/10 hover:bg-white/20 transition"
+                  onClick={
+                    clearChat
+                  }
+                  className="
+                    h-9
+                    w-9
+                    md:h-10
+                    md:w-10
+                    rounded-xl
+                    bg-white/10
+                    hover:bg-white/20
+                    active:scale-90
+                    transition
+                  "
                   title="Clear chat"
                 >
                   🗑️
@@ -1782,31 +1672,71 @@ ${API_URL}`,
 
             </div>
 
-            {/* =================================================
-                VOICE SETTINGS
-            ================================================= */}
-
-            {/* <VoiceSettings /> */}
-
           </div>
 
         </div>
+
 
         {/* =================================================
             CHAT AREA
         ================================================= */}
 
-        <div className="max-w-6xl mx-auto px-3 md:px-5 py-5">
+        <div
+          className="
+            flex-1
+            min-h-0
+            overflow-hidden
+            max-w-6xl
+            w-full
+            mx-auto
+            px-0
+            md:px-5
+            py-0
+            md:py-4
+          "
+        >
 
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+          <div
+            className="
+              h-full
+              bg-white
+              md:rounded-3xl
+              md:shadow-xl
+              md:border
+              md:border-slate-200
+              overflow-hidden
+              flex
+              flex-col
+            "
+          >
 
-            {/* =================================================
+            {/* =============================================
                 MESSAGE AREA
-            ================================================= */}
+                ONLY THIS SCROLLS
+            ============================================= */}
 
-            <div className="h-[calc(100vh-430px)] min-h-[500px] overflow-y-auto px-4 md:px-8 py-6">
+            <div
+              className="
+                flex-1
+                min-h-0
+                overflow-y-auto
+                overflow-x-hidden
+                overscroll-contain
+                scroll-smooth
+                px-3
+                sm:px-4
+                md:px-8
+                py-4
+                md:py-6
+              "
+            >
 
-              <div className="max-w-4xl mx-auto">
+              <div
+                className="
+                  max-w-4xl
+                  mx-auto
+                "
+              >
 
                 {messages.map(
                   (message) => {
@@ -1815,96 +1745,130 @@ ${API_URL}`,
                       message.role ===
                       'user'
 
-                    const isVoiceUser =
-                      isUser &&
-                      message.fromVoice
-
-                    const isSpeakingThis =
-                      speaking &&
+                    const isSpeaking =
                       speakingMessageId ===
-                        message.id
+                      message.id
 
                     return (
                       <div
-                        key={message.id}
-                        className={`flex gap-3 mb-6 ${
-                          isUser
-                            ? 'justify-end'
-                            : 'justify-start'
-                        }`}
+                        key={
+                          message.id
+                        }
+                        className={`
+                          flex
+                          gap-2
+                          md:gap-3
+                          mb-4
+                          md:mb-6
+                          ${
+                            isUser
+                              ? 'justify-end'
+                              : 'justify-start'
+                          }
+                        `}
                       >
 
-                        {/* =================================================
-                            BOT ICON
-                        ================================================= */}
+                        {/* BOT ICON */}
 
                         {!isUser && (
                           <div
-                            className={`flex-shrink-0 h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center transition-all ${
-                              isSpeakingThis
-                                ? 'scale-110 shadow-lg ring-2 ring-indigo-200 animate-pulse'
-                                : ''
-                            }`}
+                            className="
+                              flex-shrink-0
+                              h-8
+                              w-8
+                              md:h-9
+                              md:w-9
+                              rounded-xl
+                              bg-indigo-50
+                              flex
+                              items-center
+                              justify-center
+                              text-sm
+                            "
                           >
-                            {isSpeakingThis
+                            {isSpeaking
                               ? '🗣️'
                               : '🤖'}
                           </div>
                         )}
 
-                        {/* =================================================
-                            MESSAGE
-                        ================================================= */}
+
+                        {/* MESSAGE */}
 
                         <div
-                          className={`max-w-[88%] md:max-w-[75%] ${
-                            isUser
-                              ? 'order-first'
-                              : ''
-                          }`}
+                          className={`
+                            max-w-[88%]
+                            md:max-w-[75%]
+                            min-w-0
+                            ${
+                              isUser
+                                ? 'order-first'
+                                : ''
+                            }
+                          `}
                         >
 
-                          {/* SPEAKER LABEL */}
+                          {/* LABEL */}
 
                           <div
-                            className={`text-[10px] font-semibold mb-1 ${
-                              isUser
-                                ? 'text-right text-indigo-500'
-                                : 'text-left text-slate-400'
-                            }`}
+                            className="
+                              mb-1
+                              px-1
+                              text-[9px]
+                              md:text-[10px]
+                              text-slate-400
+                              font-semibold
+                            "
                           >
                             {isUser
-                              ? isVoiceUser
+                              ? message.fromVoice
                                 ? '🎤 You · Voice'
                                 : '👤 You · Text'
-                              : isSpeakingThis
-                              ? '🗣️ Shivyog AI · Speaking'
+                              : isSpeaking
+                              ? '🗣️ AI · Speaking'
                               : '🤖 Shivyog AI'}
                           </div>
 
-                          {/* MESSAGE BUBBLE */}
+
+                          {/* BUBBLE */}
 
                           <div
-                            className={`px-4 py-3 rounded-2xl text-sm leading-7 ${
-                              isUser
-                                ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md shadow-md'
-                                : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md'
-                            }`}
+                            className={`
+                              px-3
+                              md:px-4
+                              py-2.5
+                              md:py-3
+                              rounded-2xl
+                              text-sm
+                              leading-7
+                              break-words
+                              ${
+                                isUser
+                                  ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md'
+                                  : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md'
+                              }
+                            `}
                           >
                             {renderAnswer(
                               message.content
                             )}
                           </div>
 
-                          {/* =================================================
-                              ACTION BUTTONS
-                          ================================================= */}
+
+                          {/* ACTION BUTTONS */}
 
                           {!isUser &&
                             message.actions
                               ?.length >
                               0 && (
-                              <div className="flex flex-wrap gap-2 mt-3">
+                              <div
+                                className="
+                                  flex
+                                  flex-wrap
+                                  gap-2
+                                  mt-3
+                                "
+                              >
                                 {message.actions.map(
                                   (
                                     action,
@@ -1923,68 +1887,87 @@ ${API_URL}`,
                               </div>
                             )}
 
-                          {/* =================================================
-                              SOURCES
-                          ================================================= */}
+
+                          {/* SOURCES */}
 
                           {!isUser &&
                             message.sources
                               ?.length >
                               0 && (
-                              <div className="mt-2 text-[10px] text-slate-400">
+                              <div
+                                className="
+                                  mt-2
+                                  text-[10px]
+                                  text-slate-400
+                                "
+                              >
                                 📚{' '}
                                 {
                                   message
                                     .sources
                                     .length
                                 }{' '}
-                                shop knowledge sources used
+                                shop knowledge
+                                sources used
                               </div>
                             )}
 
-                          {/* =================================================
-                              LISTEN / STOP
-                          ================================================= */}
+
+                          {/* LISTEN */}
 
                           {!isUser && (
-                            <div className="mt-2">
+                            <div
+                              className="
+                                mt-2
+                              "
+                            >
 
                               <button
                                 onClick={() =>
-                                  speakAnswer(
-                                    message.content,
-                                    message.id
-                                  )
+                                  isSpeaking
+                                    ? stopSpeaking()
+                                    : speakAnswer(
+                                        message.content,
+                                        message.id
+                                      )
                                 }
-                                className={`group text-xs px-3 py-1.5 rounded-xl border transition-all ${
-                                  isSpeakingThis
-                                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                                    : 'border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 text-slate-500'
-                                }`}
+                                className="
+                                  text-xs
+                                  px-3
+                                  py-1.5
+                                  rounded-lg
+                                  border
+                                  border-slate-200
+                                  hover:bg-slate-50
+                                  active:scale-95
+                                  text-slate-500
+                                  transition
+                                "
                               >
-                                {isSpeakingThis ? (
-                                  <>
-                                    ⏹ Stop
-                                  </>
-                                ) : (
-                                  <>
-                                    🔊 Listen
-                                  </>
-                                )}
+                                {isSpeaking
+                                  ? '⏹ Stop'
+                                  : '🔊 Listen'}
                               </button>
 
                             </div>
                           )}
 
-                          {/* =================================================
-                              SUGGESTIONS
-                          ================================================= */}
+
+                          {/* SUGGESTIONS */}
 
                           {!isUser &&
-                            message.suggestions
+                            message
+                              .suggestions
                               ?.length >
                               0 && (
-                              <div className="flex flex-wrap gap-2 mt-3">
+                              <div
+                                className="
+                                  flex
+                                  flex-wrap
+                                  gap-2
+                                  mt-3
+                                "
+                              >
 
                                 {message.suggestions.map(
                                   (
@@ -1997,13 +1980,28 @@ ${API_URL}`,
                                       }
                                       onClick={() =>
                                         sendMessage(
-                                          suggestion.text
+                                          suggestion.text,
+                                          false
                                         )
                                       }
                                       disabled={
                                         loading
                                       }
-                                      className="px-3 py-2 rounded-xl border border-indigo-100 bg-indigo-50/60 hover:bg-indigo-100 text-xs text-indigo-700 font-medium transition disabled:opacity-50"
+                                      className="
+                                        px-3
+                                        py-2
+                                        rounded-xl
+                                        border
+                                        border-indigo-100
+                                        bg-indigo-50/60
+                                        hover:bg-indigo-100
+                                        active:scale-95
+                                        text-xs
+                                        text-indigo-700
+                                        font-medium
+                                        transition
+                                        disabled:opacity-50
+                                      "
                                     >
                                       {
                                         suggestion.icon
@@ -2020,24 +2018,31 @@ ${API_URL}`,
 
                         </div>
 
-                        {/* =================================================
-                            USER ICON
-                        ================================================= */}
+
+                        {/* USER ICON */}
 
                         {isUser && (
                           <div
-                            className={`flex-shrink-0 h-9 w-9 rounded-xl text-white flex items-center justify-center shadow-md transition-all ${
-                              isVoiceUser
-                                ? 'bg-gradient-to-br from-rose-500 to-orange-500'
-                                : 'bg-gradient-to-br from-indigo-600 to-blue-600'
-                            }`}
-                            title={
-                              isVoiceUser
-                                ? 'Voice message'
-                                : 'Text message'
-                            }
+                            className={`
+                              flex-shrink-0
+                              h-8
+                              w-8
+                              md:h-9
+                              md:w-9
+                              rounded-xl
+                              text-white
+                              flex
+                              items-center
+                              justify-center
+                              text-sm
+                              ${
+                                message.fromVoice
+                                  ? 'bg-violet-600'
+                                  : 'bg-indigo-600'
+                              }
+                            `}
                           >
-                            {isVoiceUser
+                            {message.fromVoice
                               ? '🎤'
                               : '👤'}
                           </div>
@@ -2048,34 +2053,86 @@ ${API_URL}`,
                   }
                 )}
 
+
                 {/* =================================================
                     TYPING
                 ================================================= */}
 
                 {loading && (
-                  <div className="flex gap-3 mb-6">
+                  <div
+                    className="
+                      flex
+                      gap-3
+                      mb-5
+                    "
+                  >
 
-                    <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center animate-pulse">
+                    <div
+                      className="
+                        h-8
+                        w-8
+                        md:h-9
+                        md:w-9
+                        rounded-xl
+                        bg-indigo-50
+                        flex
+                        items-center
+                        justify-center
+                      "
+                    >
                       🤖
                     </div>
 
-                    <div>
+                    <div
+                      className="
+                        bg-slate-50
+                        border
+                        border-slate-200
+                        px-5
+                        py-4
+                        rounded-2xl
+                      "
+                    >
 
-                      <div className="text-[10px] text-slate-400 mb-1">
-                        🤖 Shivyog AI · Thinking
-                      </div>
+                      <div className="flex gap-1.5">
 
-                      <div className="bg-slate-50 border border-slate-200 px-5 py-4 rounded-2xl">
+                        <span
+                          className="
+                            h-2
+                            w-2
+                            bg-slate-400
+                            rounded-full
+                            animate-bounce
+                          "
+                        />
 
-                        <div className="flex gap-1.5">
+                        <span
+                          className="
+                            h-2
+                            w-2
+                            bg-slate-400
+                            rounded-full
+                            animate-bounce
+                          "
+                          style={{
+                            animationDelay:
+                              '150ms',
+                          }}
+                        />
 
-                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" />
-
-                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
-
-                          <span className="h-2 w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
-
-                        </div>
+                        <span
+                          className="
+                            h-2
+                            w-2
+                            bg-slate-400
+                            rounded-full
+                            animate-bounce
+                          "
+                          style={{
+                            animationDelay:
+                              '300ms',
+                          }}
+                        />
 
                       </div>
 
@@ -2083,6 +2140,7 @@ ${API_URL}`,
 
                   </div>
                 )}
+
 
                 <div
                   ref={
@@ -2094,17 +2152,41 @@ ${API_URL}`,
 
             </div>
 
+
             {/* =================================================
                 INPUT
             ================================================= */}
 
-            <div className="border-t border-slate-200 bg-white p-3 md:p-5">
+            <div
+              className="
+                flex-shrink-0
+                border-t
+                border-slate-200
+                bg-white
+                p-2.5
+                md:p-5
+              "
+            >
 
-              <div className="max-w-4xl mx-auto">
+              <div
+                className="
+                  max-w-4xl
+                  mx-auto
+                "
+              >
 
                 {/* QUICK BUTTONS */}
 
-                <div className="flex flex-wrap gap-2 mb-3">
+                <div
+                  className="
+                    flex
+                    gap-2
+                    mb-2.5
+                    overflow-x-auto
+                    pb-1
+                    scrollbar-hide
+                  "
+                >
 
                   <button
                     onClick={() =>
@@ -2112,13 +2194,23 @@ ${API_URL}`,
                         'shop cha timing kay ahe?'
                       )
                     }
-                    disabled={
-                      loading
-                    }
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
+                    disabled={loading}
+                    className="
+                      flex-shrink-0
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-slate-50
+                      border
+                      text-xs
+                      hover:bg-slate-100
+                      active:scale-95
+                      disabled:opacity-50
+                    "
                   >
                     🕘 Timing
                   </button>
+
 
                   <button
                     onClick={() =>
@@ -2126,13 +2218,23 @@ ${API_URL}`,
                         'shop location kay ahe?'
                       )
                     }
-                    disabled={
-                      loading
-                    }
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
+                    disabled={loading}
+                    className="
+                      flex-shrink-0
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-slate-50
+                      border
+                      text-xs
+                      hover:bg-slate-100
+                      active:scale-95
+                      disabled:opacity-50
+                    "
                   >
                     📍 Location
                   </button>
+
 
                   <button
                     onClick={() =>
@@ -2140,13 +2242,23 @@ ${API_URL}`,
                         'available products sang'
                       )
                     }
-                    disabled={
-                      loading
-                    }
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
+                    disabled={loading}
+                    className="
+                      flex-shrink-0
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-slate-50
+                      border
+                      text-xs
+                      hover:bg-slate-100
+                      active:scale-95
+                      disabled:opacity-50
+                    "
                   >
                     🛍 Products
                   </button>
+
 
                   <button
                     onClick={() =>
@@ -2154,26 +2266,76 @@ ${API_URL}`,
                         'services kontya available ahet?'
                       )
                     }
-                    disabled={
-                      loading
-                    }
-                    className="px-3 py-2 rounded-xl bg-slate-50 border text-xs hover:bg-slate-100 disabled:opacity-50"
+                    disabled={loading}
+                    className="
+                      flex-shrink-0
+                      px-3
+                      py-2
+                      rounded-xl
+                      bg-slate-50
+                      border
+                      text-xs
+                      hover:bg-slate-100
+                      active:scale-95
+                      disabled:opacity-50
+                    "
                   >
                     🛠 Services
                   </button>
 
                 </div>
 
-                {/* =================================================
-                    INPUT BOX
-                ================================================= */}
+
+                {/* LISTENING */}
+
+                {listening && (
+                  <div
+                    className="
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      mb-2
+                      text-xs
+                      font-semibold
+                      text-violet-600
+                    "
+                  >
+
+                    <span
+                      className="
+                        h-2
+                        w-2
+                        rounded-full
+                        bg-violet-500
+                        animate-pulse
+                      "
+                    />
+
+                    Listening... Speak now
+
+                  </div>
+                )}
+
+
+                {/* INPUT BOX */}
 
                 <div
-                  className={`flex items-end gap-2 bg-slate-50 border rounded-2xl p-2 transition-all ${
-                    listening
-                      ? 'border-rose-400 ring-4 ring-rose-100'
-                      : 'border-slate-300 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100'
-                  }`}
+                  className="
+                    flex
+                    items-end
+                    gap-1.5
+                    md:gap-2
+                    bg-slate-50
+                    border
+                    border-slate-300
+                    rounded-2xl
+                    p-1.5
+                    md:p-2
+                    focus-within:border-indigo-500
+                    focus-within:ring-4
+                    focus-within:ring-indigo-100
+                  "
                 >
 
                   <textarea
@@ -2187,51 +2349,67 @@ ${API_URL}`,
                       handleKeyDown
                     }
                     rows={1}
+                    disabled={loading}
                     placeholder={
                       listening
-                        ? '🎤 Bolat raha...'
+                        ? 'Listening...'
                         : 'Ask anything... LED bulb, wiring, price, service...'
                     }
-                    className="flex-1 bg-transparent outline-none resize-none px-3 py-3 text-sm max-h-32"
+                    className="
+                      flex-1
+                      min-w-0
+                      bg-transparent
+                      outline-none
+                      resize-none
+                      px-2
+                      md:px-3
+                      py-2.5
+                      md:py-3
+                      text-sm
+                      max-h-32
+                      disabled:opacity-50
+                    "
                   />
 
-                  {/* =================================================
-                      VOICE INPUT
-                  ================================================= */}
+
+                  {/* VOICE */}
 
                   <button
                     onClick={
                       startVoice
                     }
-                    disabled={
-                      loading
-                    }
-                    className={`relative h-11 w-11 rounded-xl flex items-center justify-center text-lg transition-all ${
-                      listening
-                        ? 'bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg scale-105'
-                        : 'bg-white border border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 hover:scale-105'
-                    } disabled:opacity-40`}
+                    disabled={loading}
+                    className={`
+                      flex-shrink-0
+                      h-11
+                      w-11
+                      rounded-xl
+                      flex
+                      items-center
+                      justify-center
+                      text-lg
+                      transition
+                      active:scale-90
+                      ${
+                        listening
+                          ? 'bg-red-500 text-white animate-pulse'
+                          : 'bg-white border border-slate-200 hover:bg-indigo-50'
+                      }
+                      disabled:opacity-40
+                    `}
                     title={
                       listening
                         ? 'Stop voice'
-                        : 'Speak to AI'
+                        : 'Voice input'
                     }
                   >
-                    {listening ? (
-                      <>
-                        <span className="absolute inset-0 rounded-xl animate-ping bg-rose-400 opacity-20" />
-                        <span className="relative">
-                          ⏹
-                        </span>
-                      </>
-                    ) : (
-                      '🎤'
-                    )}
+                    {listening
+                      ? '⏹'
+                      : '🎤'}
                   </button>
 
-                  {/* =================================================
-                      SEND
-                  ================================================= */}
+
+                  {/* SEND */}
 
                   <button
                     onClick={() =>
@@ -2241,34 +2419,41 @@ ${API_URL}`,
                       loading ||
                       !input.trim()
                     }
-                    className="h-11 w-11 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 transition shadow-md"
-                    title="Send text"
+                    className="
+                      flex-shrink-0
+                      h-11
+                      w-11
+                      rounded-xl
+                      bg-gradient-to-r
+                      from-indigo-600
+                      to-blue-600
+                      text-white
+                      flex
+                      items-center
+                      justify-center
+                      disabled:opacity-40
+                      hover:scale-105
+                      active:scale-90
+                      transition
+                    "
+                    title="Send"
                   >
                     ➤
                   </button>
 
                 </div>
 
-                {/* =================================================
-                    STATUS
-                ================================================= */}
 
-                <div className="text-center text-[10px] text-slate-400 mt-2">
-
-                  {listening ? (
-                    <span className="text-rose-500 font-medium">
-                      🎤 Listening... बोलून थांबा — message automatically send होईल आणि AI answer बोलेल.
-                    </span>
-                  ) : speaking ? (
-                    <span className="text-indigo-500 font-medium">
-                      🗣️ Shivyog AI बोलत आहे...
-                    </span>
-                  ) : (
-                    <>
-                      Enter to send · Shift + Enter for new line · 🎤 Voice = Auto Send + Auto Speak
-                    </>
-                  )}
-
+                <div
+                  className="
+                    text-center
+                    text-[9px]
+                    md:text-[10px]
+                    text-slate-400
+                    mt-1.5
+                  "
+                >
+                  Enter to send · Shift + Enter for new line · 🎤 voice बोलून थांबल्यावर automatically send होईल
                 </div>
 
               </div>
@@ -2281,11 +2466,23 @@ ${API_URL}`,
 
       </section>
 
+
       {/* =====================================================
           MOBILE CONTACT BAR
       ===================================================== */}
 
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 grid grid-cols-3 bg-white border-t shadow-xl">
+      <div
+        className="
+          md:hidden
+          flex-shrink-0
+          z-40
+          grid
+          grid-cols-3
+          bg-white
+          border-t
+          shadow-xl
+        "
+      >
 
         <a
           href={waLink(
@@ -2293,30 +2490,110 @@ ${API_URL}`,
           )}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-3 text-center text-xs font-semibold text-green-600"
+          className="
+            py-2.5
+            text-center
+            text-xs
+            font-semibold
+            text-green-600
+            active:bg-green-50
+          "
         >
           💬 WhatsApp
         </a>
+
 
         <a
           href={telLink(
             PHONE_NUMBERS[0]
           )}
-          className="py-3 text-center text-xs font-semibold text-blue-600 border-x"
+          className="
+            py-2.5
+            text-center
+            text-xs
+            font-semibold
+            text-blue-600
+            border-x
+            active:bg-blue-50
+          "
         >
           📞 Call
         </a>
+
 
         <a
           href={MAPS_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-3 text-center text-xs font-semibold text-red-500"
+          className="
+            py-2.5
+            text-center
+            text-xs
+            font-semibold
+            text-red-500
+            active:bg-red-50
+          "
         >
           🗺️ Directions
         </a>
 
       </div>
+
+
+      {/* =====================================================
+          GLOBAL MOBILE SCROLL FIX
+      ===================================================== */}
+
+      <style>{`
+        html,
+        body,
+        #root {
+          max-width: 100%;
+        }
+
+        html,
+        body {
+          overscroll-behavior: none;
+        }
+
+        * {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hide horizontal scrollbar */
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        /* Chat scrollbar */
+        ::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          border-radius: 999px;
+        }
+
+        /* Mobile */
+        @media (max-width: 767px) {
+          textarea {
+            font-size: 16px !important;
+          }
+
+          body {
+            overflow: hidden !important;
+          }
+        }
+      `}</style>
 
     </div>
   )
