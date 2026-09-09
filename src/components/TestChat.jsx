@@ -122,7 +122,7 @@ function DynamicAction({ action }) {
         href={telLink(
           action.phone || PHONE_NUMBERS[0]
         )}
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         📞 {action.label || 'Call Shop'}
       </a>
@@ -138,7 +138,7 @@ function DynamicAction({ action }) {
         )}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         💬 {action.label || 'WhatsApp'}
       </a>
@@ -151,7 +151,7 @@ function DynamicAction({ action }) {
         href={action.url || MAPS_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         🗺️ {action.label || 'Directions'}
       </a>
@@ -164,7 +164,7 @@ function DynamicAction({ action }) {
         href={action.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition shadow-sm"
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         🔗 {action.label || 'Open'}
       </a>
@@ -191,13 +191,6 @@ const DIGITS = {
   9: 'nine',
 }
 
-/*
-  Phone number:
-  9876543210
-  =>
-  nine eight seven six five four three two one zero
-*/
-
 function numberToEnglishDigits(value) {
   const digits = String(value).replace(/\D/g, '')
 
@@ -216,35 +209,21 @@ function numberToEnglishDigits(value) {
 function prepareSpeechText(text) {
   let clean = String(text || '')
 
-  // Markdown
   clean = clean.replace(/\*\*/g, '')
   clean = clean.replace(/[#*_~]/g, '')
-
-  // Markdown links
   clean = clean.replace(
     /\[(.*?)\]\(.*?\)/g,
     '$1'
   )
-
-  // URLs
   clean = clean.replace(
     /https?:\/\/[^\s]+/gi,
     ''
   )
-
-  /*
-    Indian mobile numbers.
-    10 digits starting with 6-9.
-  */
   clean = clean.replace(
     /(?<!\d)([6-9]\d{9})(?!\d)/g,
     (match) =>
       ` ${numberToEnglishDigits(match)} `
   )
-
-  /*
-    +91 phone number
-  */
   clean = clean.replace(
     /(?:\+91[\s-]?)?([6-9]\d{9})/g,
     (full, number) => {
@@ -253,20 +232,12 @@ function prepareSpeechText(text) {
       )} `
     }
   )
-
-  /*
-    Common symbols.
-  */
   clean = clean
     .replace(/₹/g, ' rupees ')
     .replace(/%/g, ' percent ')
     .replace(/&/g, ' and ')
     .replace(/\//g, ' slash ')
     .replace(/-/g, ' ')
-
-  /*
-    Better pauses.
-  */
   clean = clean
     .replace(/\.\.\./g, '... ')
     .replace(/:/g, ': ')
@@ -283,7 +254,6 @@ function prepareSpeechText(text) {
 
 function getVoiceLabel(voice) {
   if (!voice) return 'Default browser voice'
-
   return `${voice.name} · ${voice.lang}`
 }
 
@@ -298,21 +268,14 @@ function voiceScore(voice) {
 
   let score = 0
 
-  // Strong preference for Indian voices
   if (lang === 'mr-in') score += 100
   if (lang.startsWith('mr')) score += 90
-
   if (lang === 'hi-in') score += 85
   if (lang.startsWith('hi')) score += 80
-
   if (lang === 'en-in') score += 75
   if (lang.startsWith('en-in')) score += 70
-
-  // Useful Google / Microsoft voices
   if (name.includes('google')) score += 15
   if (name.includes('microsoft')) score += 15
-
-  // Avoid some robotic-looking defaults where possible
   if (
     name.includes('compact') ||
     name.includes('espeak')
@@ -340,81 +303,45 @@ export default function Chatbot() {
   ])
 
   const [input, setInput] = useState('')
-
-  const [loading, setLoading] =
-    useState(false)
-
-  const [listening, setListening] =
-    useState(false)
-
-  const [speaking, setSpeaking] =
-    useState(false)
-
-  const [speakingMessageId, setSpeakingMessageId] =
-    useState(null)
-
-  const [online, setOnline] =
-    useState(false)
-
-  /* =======================================================
-     VOICES
-  ======================================================= */
+  const [loading, setLoading] = useState(false)
+  const [listening, setListening] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
+  const [speakingMessageId, setSpeakingMessageId] = useState(null)
+  const [online, setOnline] = useState(false)
 
   const [voices, setVoices] = useState([])
+  const [selectedVoiceName, setSelectedVoiceName] = useState(() => {
+    try {
+      return (
+        localStorage.getItem(
+          'shivyog_selected_voice'
+        ) || ''
+      )
+    } catch {
+      return ''
+    }
+  })
 
-  const [selectedVoiceName, setSelectedVoiceName] =
-    useState(() => {
-      try {
-        return (
-          localStorage.getItem(
-            'shivyog_selected_voice'
-          ) || ''
-        )
-      } catch {
-        return ''
-      }
-    })
+  const [fallbackVoiceName, setFallbackVoiceName] = useState(() => {
+    try {
+      return (
+        localStorage.getItem(
+          'shivyog_fallback_voice'
+        ) || ''
+      )
+    } catch {
+      return ''
+    }
+  })
 
-  const [fallbackVoiceName, setFallbackVoiceName] =
-    useState(() => {
-      try {
-        return (
-          localStorage.getItem(
-            'shivyog_fallback_voice'
-          ) || ''
-        )
-      } catch {
-        return ''
-      }
-    })
-
-  /* =======================================================
-     REFS
-  ======================================================= */
-
-  const recognitionRef =
-    useRef(null)
-
-  const voiceTranscriptRef =
-    useRef('')
-
-  const loadingRef =
-    useRef(false)
-
-  const messagesEndRef =
-    useRef(null)
-
-  /* =======================================================
-     KEEP LOADING REF UPDATED
-  ======================================================= */
+  const recognitionRef = useRef(null)
+  const voiceTranscriptRef = useRef('')
+  const loadingRef = useRef(false)
+  const messagesEndRef = useRef(null)
 
   useEffect(() => {
     loadingRef.current = loading
   }, [loading])
-
-  /* =======================================================
-     CHECK BACKEND
-  ======================================================= */
 
   async function checkBackend() {
     try {
@@ -438,14 +365,9 @@ export default function Chatbot() {
         'Backend status error:',
         error
       )
-
       setOnline(false)
     }
   }
-
-  /* =======================================================
-     LOAD BROWSER VOICES
-  ======================================================= */
 
   function loadVoices() {
     if (
@@ -466,10 +388,6 @@ export default function Chatbot() {
 
     setVoices(sorted)
 
-    /*
-      First time:
-      automatically choose best Indian voice.
-    */
     setSelectedVoiceName((current) => {
       if (
         current &&
@@ -495,9 +413,6 @@ export default function Chatbot() {
       return best.name
     })
 
-    /*
-      Fallback voice
-    */
     setFallbackVoiceName((current) => {
       if (
         current &&
@@ -509,10 +424,6 @@ export default function Chatbot() {
         return current
       }
 
-      /*
-        Find a different voice from
-        primary voice if possible.
-      */
       const fallback =
         sorted.find(
           (voice) =>
@@ -533,16 +444,8 @@ export default function Chatbot() {
     })
   }
 
-  /* =======================================================
-     VOICE INITIALIZATION
-  ======================================================= */
-
   useEffect(() => {
     checkBackend()
-
-    /*
-      Load voices.
-    */
     loadVoices()
 
     if (
@@ -571,31 +474,14 @@ export default function Chatbot() {
     const recognition =
       new SpeechRecognition()
 
-    /*
-      One voice session at a time.
-    */
     recognition.continuous = false
-
-    /*
-      Interim + final results.
-    */
     recognition.interimResults = true
-
-    /*
-      Marathi recognition.
-    */
     recognition.lang = 'mr-IN'
-
-    /*
-      Better confidence.
-    */
     recognition.maxAlternatives = 1
 
     recognition.onstart = () => {
       setListening(true)
-
-      voiceTranscriptRef.current =
-        ''
+      voiceTranscriptRef.current = ''
     }
 
     recognition.onresult = (
@@ -619,7 +505,6 @@ export default function Chatbot() {
       if (transcript) {
         voiceTranscriptRef.current =
           transcript
-
         setInput(transcript)
       }
     }
@@ -631,7 +516,6 @@ export default function Chatbot() {
         'Speech recognition error:',
         event.error
       )
-
       setListening(false)
 
       if (
@@ -646,11 +530,6 @@ export default function Chatbot() {
       }
     }
 
-    /*
-      IMPORTANT:
-      Voice stops =>
-      automatically send.
-    */
     recognition.onend = () => {
       setListening(false)
 
@@ -691,10 +570,6 @@ export default function Chatbot() {
     }
   }, [])
 
-  /* =======================================================
-     SCROLL
-  ======================================================= */
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView(
       {
@@ -702,10 +577,6 @@ export default function Chatbot() {
       }
     )
   }, [messages, loading])
-
-  /* =======================================================
-     SAVE VOICE SETTINGS
-  ======================================================= */
 
   useEffect(() => {
     try {
@@ -729,10 +600,6 @@ export default function Chatbot() {
     } catch {}
   }, [fallbackVoiceName])
 
-  /* =======================================================
-     START / STOP VOICE INPUT
-  ======================================================= */
-
   function startVoice() {
     if (
       !recognitionRef.current
@@ -740,7 +607,6 @@ export default function Chatbot() {
       alert(
         'Voice input तुमच्या browser मध्ये supported नाही. Chrome वापरा.'
       )
-
       return
     }
 
@@ -750,14 +616,9 @@ export default function Chatbot() {
       try {
         recognitionRef.current.stop()
       } catch {}
-
       return
     }
 
-    /*
-      Stop current bot speech
-      before listening.
-    */
     if (
       'speechSynthesis' in window
     ) {
@@ -766,9 +627,7 @@ export default function Chatbot() {
       setSpeakingMessageId(null)
     }
 
-    voiceTranscriptRef.current =
-      ''
-
+    voiceTranscriptRef.current = ''
     setInput('')
 
     try {
@@ -781,13 +640,8 @@ export default function Chatbot() {
     }
   }
 
-  /* =======================================================
-     GET SELECTED / FALLBACK VOICE
-  ======================================================= */
-
   function getSelectedVoice() {
     if (!voices.length) return null
-
     return (
       voices.find(
         (voice) =>
@@ -799,7 +653,6 @@ export default function Chatbot() {
 
   function getFallbackVoice() {
     if (!voices.length) return null
-
     return (
       voices.find(
         (voice) =>
@@ -816,16 +669,11 @@ export default function Chatbot() {
     )
   }
 
-  /* =======================================================
-     SELECT BEST VOICE FOR LANGUAGE
-  ======================================================= */
-
   function getBestVoiceForText(
     text
   ) {
     const selected =
       getSelectedVoice()
-
     const fallback =
       getFallbackVoice()
 
@@ -838,17 +686,10 @@ export default function Chatbot() {
       )
     }
 
-    /*
-      User manually selected voice
-      should remain the main voice.
-    */
     if (selected) {
       return selected
     }
 
-    /*
-      Automatic fallback.
-    */
     const lower =
       String(text).toLowerCase()
 
@@ -866,9 +707,6 @@ export default function Chatbot() {
       if (marathi) return marathi
     }
 
-    /*
-      English / numbers.
-    */
     if (
       /[a-z]/i.test(lower)
     ) {
@@ -901,10 +739,6 @@ export default function Chatbot() {
     )
   }
 
-  /* =======================================================
-     SMART TEXT TO SPEECH
-  ======================================================= */
-
   function speakAnswer(
     text,
     messageId = null
@@ -920,10 +754,6 @@ export default function Chatbot() {
 
     if (!text) return
 
-    /*
-      If same message is speaking:
-      STOP.
-    */
     if (
       speaking &&
       speakingMessageId ===
@@ -933,11 +763,7 @@ export default function Chatbot() {
       return
     }
 
-    /*
-      Stop any previous speech.
-    */
     window.speechSynthesis.cancel()
-
     setSpeaking(false)
     setSpeakingMessageId(null)
 
@@ -946,9 +772,6 @@ export default function Chatbot() {
 
     if (!cleanText) return
 
-    /*
-      Main selected voice.
-    */
     const primaryVoice =
       getBestVoiceForText(
         cleanText
@@ -957,11 +780,6 @@ export default function Chatbot() {
     const fallbackVoice =
       getFallbackVoice()
 
-    /*
-      Split answer into natural chunks.
-      This makes long answers feel
-      less robotic.
-    */
     const chunks =
       cleanText
         .split(
@@ -972,10 +790,6 @@ export default function Chatbot() {
         )
         .filter(Boolean)
 
-    /*
-      If sentence splitting fails,
-      speak whole answer.
-    */
     const finalChunks =
       chunks.length
         ? chunks
@@ -1005,12 +819,6 @@ export default function Chatbot() {
 
       currentIndex++
 
-      /*
-        Phone numbers and English
-        words are spoken naturally
-        using English-capable voice
-        when fallback is better.
-      */
       const hasEnglish =
         /[a-z]/i.test(chunk)
 
@@ -1018,15 +826,6 @@ export default function Chatbot() {
         primaryVoice ||
         fallbackVoice
 
-      /*
-        If selected voice is Marathi
-        but chunk contains mainly
-        English, fallback to English
-        voice only when available.
-        
-        Phone numbers are already
-        converted to English words.
-      */
       if (hasEnglish) {
         const englishVoice =
           voices.find(
@@ -1041,10 +840,6 @@ export default function Chatbot() {
               .startsWith('en')
           )
 
-        /*
-          Use English voice only if
-          selected voice is not English.
-        */
         if (
           englishVoice &&
           primaryVoice &&
@@ -1071,9 +866,6 @@ export default function Chatbot() {
         utterance.lang = 'mr-IN'
       }
 
-      /*
-        Human-like settings.
-      */
       utterance.rate = 0.92
       utterance.pitch = 1.02
       utterance.volume = 1
@@ -1086,10 +878,6 @@ export default function Chatbot() {
       }
 
       utterance.onend = () => {
-        /*
-          Small natural pause
-          between sentences.
-        */
         setTimeout(() => {
           speakNext()
         }, 90)
@@ -1103,9 +891,6 @@ export default function Chatbot() {
           error
         )
 
-        /*
-          Try fallback voice.
-        */
         if (
           fallbackVoice &&
           voice?.name !==
@@ -1118,16 +903,12 @@ export default function Chatbot() {
 
           fallbackUtterance.voice =
             fallbackVoice
-
           fallbackUtterance.lang =
             fallbackVoice.lang
-
           fallbackUtterance.rate =
             0.92
-
           fallbackUtterance.pitch =
             1.02
-
           fallbackUtterance.volume = 1
 
           fallbackUtterance.onend =
@@ -1167,10 +948,6 @@ export default function Chatbot() {
     speakNext()
   }
 
-  /* =======================================================
-     STOP SPEAKING
-  ======================================================= */
-
   function stopSpeaking() {
     if (
       'speechSynthesis' in window
@@ -1181,10 +958,6 @@ export default function Chatbot() {
     setSpeaking(false)
     setSpeakingMessageId(null)
   }
-
-  /* =======================================================
-     SEND MESSAGE
-  ======================================================= */
 
   async function sendMessage(
     customText = '',
@@ -1201,10 +974,6 @@ export default function Chatbot() {
       return
     }
 
-    /*
-      If voice request:
-      stop recognition state.
-    */
     if (fromVoice) {
       setListening(false)
     }
@@ -1235,12 +1004,10 @@ export default function Chatbot() {
           `${API_URL}/chat`,
           {
             method: 'POST',
-
             headers: {
               'Content-Type':
                 'application/json',
             },
-
             body: JSON.stringify({
               question,
             }),
@@ -1278,20 +1045,14 @@ export default function Chatbot() {
       const botMessage = {
         id:
           Date.now() + 1,
-
         role: 'assistant',
-
         content: answer,
-
         sources:
           data.sources || [],
-
         distances:
           data.distances || [],
-
         actions:
           data.actions || [],
-
         suggestions:
           data.suggestions ||
           generateSuggestions(
@@ -1306,23 +1067,7 @@ export default function Chatbot() {
 
       setOnline(true)
 
-      /*
-        ====================================================
-        ⭐ IMPORTANT BEHAVIOUR ⭐
-
-        TEXT USER:
-        No automatic voice.
-
-        VOICE USER:
-        Automatically speak bot answer.
-        ====================================================
-      */
-
       if (fromVoice) {
-        /*
-          Wait until React renders
-          the bot message.
-        */
         setTimeout(() => {
           speakAnswer(
             answer,
@@ -1343,9 +1088,7 @@ export default function Chatbot() {
         {
           id:
             Date.now() + 2,
-
           role: 'assistant',
-
           content:
             `⚠️ Backend connect होत नाहीये.
 
@@ -1360,10 +1103,6 @@ ${API_URL}`,
       loadingRef.current = false
     }
   }
-
-  /* =======================================================
-     DYNAMIC SUGGESTIONS
-  ======================================================= */
 
   function generateSuggestions(
     question
@@ -1539,10 +1278,6 @@ ${API_URL}`,
     ]
   }
 
-  /* =======================================================
-     CLEAR CHAT
-  ======================================================= */
-
   function clearChat() {
     if (
       'speechSynthesis' in window
@@ -1569,12 +1304,9 @@ ${API_URL}`,
       {
         id:
           Date.now(),
-
         role: 'assistant',
-
         content:
           'Namaskar! 👋 Punha suru करूया. Tumhala kay mahiti pahije?',
-
         suggestions:
           INITIAL_SUGGESTIONS.slice(
             0,
@@ -1584,198 +1316,97 @@ ${API_URL}`,
     ])
   }
 
-  /* =======================================================
-     ENTER KEY
-  ======================================================= */
-
   function handleKeyDown(e) {
     if (
       e.key === 'Enter' &&
       !e.shiftKey
     ) {
       e.preventDefault()
-
       sendMessage()
     }
   }
 
-  /* =======================================================
-     VOICE SELECTOR
-  ======================================================= */
-
-  function VoiceSettings() {
-    return (
-      <div className="mt-3 p-3 rounded-2xl bg-white/10 border border-white/10 backdrop-blur">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-
-          {/* PRIMARY VOICE */}
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-wider text-white/70 mb-1">
-              🎤 Main Voice
-            </label>
-
-            <select
-              value={selectedVoiceName}
-              onChange={(e) =>
-                setSelectedVoiceName(
-                  e.target.value
-                )
-              }
-              className="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs outline-none"
-            >
-              {voices.length === 0 && (
-                <option
-                  value=""
-                  className="text-slate-900"
-                >
-                  Loading voices...
-                </option>
-              )}
-
-              {voices.map(
-                (voice) => (
-                  <option
-                    key={`${voice.name}-${voice.lang}`}
-                    value={voice.name}
-                    className="text-slate-900"
-                  >
-                    {getVoiceLabel(
-                      voice
-                    )}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-
-          {/* FALLBACK */}
-
-          <div>
-            <label className="block text-[10px] uppercase tracking-wider text-white/70 mb-1">
-              🔄 Fallback Voice
-            </label>
-
-            <select
-              value={fallbackVoiceName}
-              onChange={(e) =>
-                setFallbackVoiceName(
-                  e.target.value
-                )
-              }
-              className="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs outline-none"
-            >
-              {voices.length === 0 && (
-                <option
-                  value=""
-                  className="text-slate-900"
-                >
-                  Loading voices...
-                </option>
-              )}
-
-              {voices.map(
-                (voice) => (
-                  <option
-                    key={`fallback-${voice.name}-${voice.lang}`}
-                    value={voice.name}
-                    className="text-slate-900"
-                  >
-                    {getVoiceLabel(
-                      voice
-                    )}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-        </div>
-
-        <div className="mt-2 text-[10px] text-white/60">
-          Main voice manually select करा. Voice unavailable असल्यास fallback voice वापरला जाईल.
-        </div>
-      </div>
-    )
-  }
-
-  /* =======================================================
-     RENDER
-  ======================================================= */
-
   return (
-    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden">
       {/* =====================================================
           NAVBAR
       ===================================================== */}
       <Navbar />
 
       {/* =====================================================
-          HEADER
+          HEADER - GRADIENT WITH ANIMATION
       ===================================================== */}
-      <div className="flex-shrink-0">
-        <div className="bg-gradient-to-r from-indigo-700 via-blue-600 to-sky-500 text-white">
-          <div className="max-w-6xl mx-auto px-4 py-4 md:py-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+      <div className="flex-shrink-0 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 animate-gradient-xy bg-[length:200%_200%]"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 py-4 md:py-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-white/20 blur-xl animate-pulse"></div>
                 <div
-                  className={`h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center text-xl md:text-2xl shadow-lg transition-all ${
+                  className={`relative h-10 w-10 md:h-12 md:w-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-xl md:text-2xl shadow-lg transition-all ${
                     speaking
-                      ? 'scale-110 shadow-2xl animate-pulse'
+                      ? 'scale-110 shadow-2xl animate-bounce'
                       : ''
                   }`}
                 >
                   {speaking ? '🗣️' : '🤖'}
                 </div>
-
-                <div>
-                  <h1 className="text-base md:text-2xl font-bold">
-                    Shivyog AI Assistant
-                  </h1>
-                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <div
-                  className={`flex items-center gap-2 px-2 md:px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-xs font-semibold ${
+              <div>
+                <h1 className="text-base md:text-2xl font-bold text-white drop-shadow-lg">
+                  Shivyog AI Assistant
+                </h1>
+                <p className="text-[10px] md:text-xs text-white/80 font-medium">
+                  ⚡ 24/7 Smart Assistant ⚡
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-3 py-1.5 md:py-2 rounded-full text-[10px] md:text-xs font-semibold backdrop-blur ${
+                  online
+                    ? 'bg-green-500/30 text-white'
+                    : 'bg-red-500/30 text-white'
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 md:h-2 md:w-2 rounded-full ${
                     online
-                      ? 'bg-green-400/20 text-white'
-                      : 'bg-red-400/20 text-white'
+                      ? 'bg-green-300 animate-pulse'
+                      : 'bg-red-300'
                   }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 md:h-2 md:w-2 rounded-full ${
-                      online
-                        ? 'bg-green-300 animate-pulse'
-                        : 'bg-red-300'
-                    }`}
-                  />
-                  {online ? 'AI Online' : 'Offline'}
-                </div>
-
-                <button
-                  onClick={clearChat}
-                  className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-white/10 hover:bg-white/20 transition flex items-center justify-center text-sm md:text-base"
-                  title="Clear chat"
-                >
-                  🗑️
-                </button>
+                />
+                {online ? 'Online' : 'Offline'}
               </div>
+
+              <button
+                onClick={clearChat}
+                className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300 flex items-center justify-center text-sm md:text-base backdrop-blur hover:scale-110 active:scale-90"
+                title="Clear chat"
+              >
+                🗑️
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* =====================================================
-          CHAT AREA - FLEXIBLE GROW
+          CHAT AREA
       ===================================================== */}
       <div className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-3 md:px-5 py-3 md:py-5 overflow-hidden">
-        <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/50 overflow-hidden">
           
           {/* =================================================
-              MESSAGE AREA - SCROLLABLE
+              MESSAGE AREA
           ================================================= */}
-          <div className="flex-1 overflow-y-auto px-3 md:px-8 py-4 md:py-6">
-            <div className="max-w-4xl mx-auto">
+          <div className="flex-1 overflow-y-auto px-3 md:px-8 py-4 md:py-6 scrollbar-thin scrollbar-thumb-indigo-200 scrollbar-track-transparent">
+            <div className="max-w-4xl mx-auto space-y-1">
               {messages.map(
                 (message) => {
                   const isUser =
@@ -1792,14 +1423,14 @@ ${API_URL}`,
                       key={message.id}
                       className={`flex gap-2 md:gap-3 mb-4 md:mb-6 ${
                         isUser ? 'justify-end' : 'justify-start'
-                      }`}
+                      } animate-fadeInUp`}
                     >
                       {/* BOT ICON */}
                       {!isUser && (
                         <div
-                          className={`flex-shrink-0 h-8 w-8 md:h-9 md:w-9 rounded-xl bg-indigo-50 flex items-center justify-center transition-all ${
+                          className={`flex-shrink-0 h-8 w-8 md:h-9 md:w-9 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center transition-all shadow-md ${
                             isSpeakingThis
-                              ? 'scale-110 shadow-lg ring-2 ring-indigo-200 animate-pulse'
+                              ? 'scale-110 shadow-lg ring-2 ring-indigo-300 animate-pulse'
                               : ''
                           }`}
                         >
@@ -1818,7 +1449,7 @@ ${API_URL}`,
                           className={`text-[9px] md:text-[10px] font-semibold mb-1 ${
                             isUser
                               ? 'text-right text-indigo-500'
-                              : 'text-left text-slate-400'
+                              : 'text-left text-purple-400'
                           }`}
                         >
                           {isUser
@@ -1832,10 +1463,10 @@ ${API_URL}`,
 
                         {/* MESSAGE BUBBLE */}
                         <div
-                          className={`px-3 py-2.5 md:px-4 md:py-3 rounded-2xl text-xs md:text-sm leading-6 md:leading-7 ${
+                          className={`px-3 py-2.5 md:px-4 md:py-3 rounded-2xl text-xs md:text-sm leading-6 md:leading-7 shadow-md transition-all ${
                             isUser
-                              ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md shadow-md'
-                              : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md'
+                              ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-br-md hover:shadow-lg'
+                              : 'bg-white/70 backdrop-blur border border-indigo-100 text-slate-800 rounded-bl-md hover:shadow-lg'
                           }`}
                         >
                           {renderAnswer(message.content)}
@@ -1854,8 +1485,9 @@ ${API_URL}`,
 
                         {/* SOURCES */}
                         {!isUser && message.sources?.length > 0 && (
-                          <div className="mt-1.5 md:mt-2 text-[8px] md:text-[10px] text-slate-400">
-                            📚 {message.sources.length} shop knowledge sources used
+                          <div className="mt-1.5 md:mt-2 flex items-center gap-1 text-[8px] md:text-[10px] text-purple-400">
+                            <span>📚</span>
+                            <span>{message.sources.length} sources used</span>
                           </div>
                         )}
 
@@ -1866,13 +1498,23 @@ ${API_URL}`,
                               onClick={() =>
                                 speakAnswer(message.content, message.id)
                               }
-                              className={`group text-[10px] md:text-xs px-2 py-1 md:px-3 md:py-1.5 rounded-xl border transition-all ${
+                              className={`group text-[10px] md:text-xs px-2 py-1 md:px-3 md:py-1.5 rounded-xl border transition-all duration-300 flex items-center gap-1 ${
                                 isSpeakingThis
-                                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                                  : 'border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 text-slate-500'
+                                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-indigo-500 shadow-md'
+                                  : 'border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 text-slate-500 hover:text-indigo-600'
                               }`}
                             >
-                              {isSpeakingThis ? '⏹ Stop' : '🔊 Listen'}
+                              {isSpeakingThis ? (
+                                <>
+                                  <span className="text-xs">⏹</span>
+                                  <span>Stop</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span className="text-xs">🔊</span>
+                                  <span>Listen</span>
+                                </>
+                              )}
                             </button>
                           </div>
                         )}
@@ -1888,7 +1530,7 @@ ${API_URL}`,
                                     sendMessage(suggestion.text)
                                   }
                                   disabled={loading}
-                                  className="px-2 py-1.5 md:px-3 md:py-2 rounded-xl border border-indigo-100 bg-indigo-50/60 hover:bg-indigo-100 text-[10px] md:text-xs text-indigo-700 font-medium transition disabled:opacity-50"
+                                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-[10px] md:text-xs text-indigo-700 font-medium transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
                                 >
                                   {suggestion.icon} {suggestion.text}
                                 </button>
@@ -1904,7 +1546,7 @@ ${API_URL}`,
                           className={`flex-shrink-0 h-8 w-8 md:h-9 md:w-9 rounded-xl text-white flex items-center justify-center shadow-md transition-all ${
                             isVoiceUser
                               ? 'bg-gradient-to-br from-rose-500 to-orange-500'
-                              : 'bg-gradient-to-br from-indigo-600 to-blue-600'
+                              : 'bg-gradient-to-br from-indigo-500 to-purple-500'
                           }`}
                           title={isVoiceUser ? 'Voice message' : 'Text message'}
                         >
@@ -1918,21 +1560,21 @@ ${API_URL}`,
 
               {/* TYPING */}
               {loading && (
-                <div className="flex gap-2 md:gap-3 mb-4 md:mb-6">
-                  <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-indigo-50 flex items-center justify-center animate-pulse">
+                <div className="flex gap-2 md:gap-3 mb-4 md:mb-6 animate-fadeInUp">
+                  <div className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center animate-pulse shadow-md">
                     🤖
                   </div>
 
                   <div>
-                    <div className="text-[9px] md:text-[10px] text-slate-400 mb-1">
+                    <div className="text-[9px] md:text-[10px] text-purple-400 mb-1 font-medium">
                       🤖 Shivyog AI · Thinking
                     </div>
 
-                    <div className="bg-slate-50 border border-slate-200 px-4 py-3 md:px-5 md:py-4 rounded-2xl">
+                    <div className="bg-white/70 backdrop-blur border border-indigo-100 px-4 py-3 md:px-5 md:py-4 rounded-2xl shadow-md">
                       <div className="flex gap-1.5">
-                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-slate-400 rounded-full animate-bounce" />
-                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:150ms]" />
-                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
+                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce" />
+                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                        <span className="h-1.5 w-1.5 md:h-2 md:w-2 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce [animation-delay:300ms]" />
                       </div>
                     </div>
                   </div>
@@ -1944,16 +1586,16 @@ ${API_URL}`,
           </div>
 
           {/* =================================================
-              INPUT - FIXED AT BOTTOM
+              INPUT
           ================================================= */}
-          <div className="flex-shrink-0 border-t border-slate-200 bg-white p-2 md:p-4">
+          <div className="flex-shrink-0 border-t border-indigo-100 bg-white/80 backdrop-blur p-2 md:p-4">
             <div className="max-w-4xl mx-auto">
               {/* QUICK BUTTONS */}
               <div className="flex flex-wrap gap-1.5 md:gap-2 mb-2 md:mb-3">
                 <button
                   onClick={() => sendMessage('shop cha timing kay ahe?')}
                   disabled={loading}
-                  className="px-2 py-1 md:px-3 md:py-2 rounded-xl bg-slate-50 border text-[9px] md:text-xs hover:bg-slate-100 disabled:opacity-50 whitespace-nowrap"
+                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[9px] md:text-xs font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   🕘 Timing
                 </button>
@@ -1961,7 +1603,7 @@ ${API_URL}`,
                 <button
                   onClick={() => sendMessage('shop location kay ahe?')}
                   disabled={loading}
-                  className="px-2 py-1 md:px-3 md:py-2 rounded-xl bg-slate-50 border text-[9px] md:text-xs hover:bg-slate-100 disabled:opacity-50 whitespace-nowrap"
+                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[9px] md:text-xs font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   📍 Location
                 </button>
@@ -1969,7 +1611,7 @@ ${API_URL}`,
                 <button
                   onClick={() => sendMessage('available products sang')}
                   disabled={loading}
-                  className="px-2 py-1 md:px-3 md:py-2 rounded-xl bg-slate-50 border text-[9px] md:text-xs hover:bg-slate-100 disabled:opacity-50 whitespace-nowrap"
+                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[9px] md:text-xs font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   🛍 Products
                 </button>
@@ -1977,7 +1619,7 @@ ${API_URL}`,
                 <button
                   onClick={() => sendMessage('services kontya available ahet?')}
                   disabled={loading}
-                  className="px-2 py-1 md:px-3 md:py-2 rounded-xl bg-slate-50 border text-[9px] md:text-xs hover:bg-slate-100 disabled:opacity-50 whitespace-nowrap"
+                  className="px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[9px] md:text-xs font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm"
                 >
                   🛠 Services
                 </button>
@@ -1985,10 +1627,10 @@ ${API_URL}`,
 
               {/* INPUT BOX */}
               <div
-                className={`flex items-end gap-1.5 md:gap-2 bg-slate-50 border rounded-2xl p-1.5 md:p-2 transition-all ${
+                className={`flex items-end gap-1.5 md:gap-2 bg-white border-2 rounded-2xl p-1.5 md:p-2 transition-all duration-300 ${
                   listening
-                    ? 'border-rose-400 ring-4 ring-rose-100'
-                    : 'border-slate-300 focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-100'
+                    ? 'border-rose-400 shadow-lg shadow-rose-100'
+                    : 'border-indigo-200 focus-within:border-indigo-400 focus-within:shadow-lg focus-within:shadow-indigo-100'
                 }`}
               >
                 <textarea
@@ -2001,23 +1643,23 @@ ${API_URL}`,
                       ? '🎤 Bolat raha...'
                       : 'Ask anything...'
                   }
-                  className="flex-1 bg-transparent outline-none resize-none px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm max-h-28"
+                  className="flex-1 bg-transparent outline-none resize-none px-2 py-2 md:px-3 md:py-3 text-xs md:text-sm max-h-28 placeholder:text-slate-400"
                 />
 
                 {/* VOICE INPUT */}
                 <button
                   onClick={startVoice}
                   disabled={loading}
-                  className={`relative h-9 w-9 md:h-11 md:w-11 rounded-xl flex items-center justify-center text-base md:text-lg transition-all ${
+                  className={`relative h-9 w-9 md:h-11 md:w-11 rounded-xl flex items-center justify-center text-base md:text-lg transition-all duration-300 ${
                     listening
-                      ? 'bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-lg scale-105'
-                      : 'bg-white border border-slate-200 hover:bg-indigo-50 hover:border-indigo-200 hover:scale-105'
+                      ? 'bg-gradient-to-br from-rose-500 to-red-500 text-white shadow-lg shadow-rose-200 scale-105'
+                      : 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-600 hover:from-indigo-200 hover:to-purple-200 hover:scale-105 hover:shadow-md'
                   } disabled:opacity-40`}
                   title={listening ? 'Stop voice' : 'Speak to AI'}
                 >
                   {listening ? (
                     <>
-                      <span className="absolute inset-0 rounded-xl animate-ping bg-rose-400 opacity-20" />
+                      <span className="absolute inset-0 rounded-xl animate-ping bg-rose-400 opacity-30" />
                       <span className="relative">⏹</span>
                     </>
                   ) : (
@@ -2029,7 +1671,7 @@ ${API_URL}`,
                 <button
                   onClick={() => sendMessage()}
                   disabled={loading || !input.trim()}
-                  className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 transition shadow-md text-sm md:text-base"
+                  className="h-9 w-9 md:h-11 md:w-11 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md hover:shadow-lg text-sm md:text-base"
                   title="Send text"
                 >
                   ➤
@@ -2037,18 +1679,18 @@ ${API_URL}`,
               </div>
 
               {/* STATUS */}
-              <div className="text-center text-[8px] md:text-[10px] text-slate-400 mt-1.5 md:mt-2">
+              <div className="text-center text-[8px] md:text-[10px] text-slate-400 mt-1.5 md:mt-2 font-medium">
                 {listening ? (
-                  <span className="text-rose-500 font-medium">
+                  <span className="text-rose-500 font-semibold animate-pulse">
                     🎤 Listening... बोलून थांबा — message automatically send होईल
                   </span>
                 ) : speaking ? (
-                  <span className="text-indigo-500 font-medium">
+                  <span className="text-indigo-500 font-semibold animate-pulse">
                     🗣️ Shivyog AI बोलत आहे...
                   </span>
                 ) : (
                   <>
-                    Enter to send · 🎤 Voice = Auto Send + Auto Speak
+                    <span>⏎ Enter to send · 🎤 Voice = Auto Send + Auto Speak</span>
                   </>
                 )}
               </div>
@@ -2060,19 +1702,19 @@ ${API_URL}`,
       {/* =====================================================
           MOBILE CONTACT BAR
       ===================================================== */}
-      <div className="md:hidden flex-shrink-0 grid grid-cols-3 bg-white border-t shadow-xl">
+      <div className="md:hidden flex-shrink-0 grid grid-cols-3 bg-white/90 backdrop-blur border-t border-indigo-100 shadow-xl">
         <a
           href={waLink(WA_MESSAGES.general)}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-green-600"
+          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-green-600 hover:bg-green-50 transition-colors duration-300"
         >
           💬 WhatsApp
         </a>
 
         <a
           href={telLink(PHONE_NUMBERS[0])}
-          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-blue-600 border-x"
+          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-blue-600 border-x border-indigo-100 hover:bg-indigo-50 transition-colors duration-300"
         >
           📞 Call
         </a>
@@ -2081,11 +1723,67 @@ ${API_URL}`,
           href={MAPS_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-red-500"
+          className="py-2.5 md:py-3 text-center text-[10px] md:text-xs font-semibold text-red-500 hover:bg-red-50 transition-colors duration-300"
         >
           🗺️ Directions
         </a>
       </div>
+
+      {/* =====================================================
+          ANIMATIONS
+      ===================================================== */}
+      <style>{`
+        @keyframes gradient-xy {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        
+        .animate-gradient-xy {
+          animation: gradient-xy 5s ease infinite;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fadeInUp {
+          animation: fadeInUp 0.4s ease-out forwards;
+        }
+
+        /* Scrollbar styling */
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #818cf8, #a78bfa);
+          border-radius: 9999px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
