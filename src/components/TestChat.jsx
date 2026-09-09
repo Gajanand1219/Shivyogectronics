@@ -10,7 +10,8 @@ import {
   MAPS_LINK,
 } from '../utils/contact'
 
-const API_URL = 'https://shivyogbackend-rizm.onrender.com'
+const API_URL =
+  'https://shivyogbackend-rizm.onrender.com'
 
 const INITIAL_SUGGESTIONS = [
   {
@@ -58,7 +59,7 @@ function renderAnswer(text) {
 
   return lines.map((line, index) => {
     const parts = line.split(
-      /(\*\*.*?\*\*|\[.*?\]\(.*?\))/
+      /(\*\*.*?\*\*|\[.*?\]\(.*?\))/  
     )
 
     return (
@@ -121,18 +122,7 @@ function DynamicAction({ action }) {
         href={telLink(
           action.phone || PHONE_NUMBERS[0]
         )}
-        className="
-          flex items-center gap-2
-          px-4 py-2
-          rounded-xl
-          bg-blue-600
-          text-white
-          text-sm
-          font-semibold
-          hover:bg-blue-700
-          active:scale-95
-          transition
-        "
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         📞 {action.label || 'Call Shop'}
       </a>
@@ -148,18 +138,7 @@ function DynamicAction({ action }) {
         )}
         target="_blank"
         rel="noopener noreferrer"
-        className="
-          flex items-center gap-2
-          px-4 py-2
-          rounded-xl
-          bg-green-500
-          text-white
-          text-sm
-          font-semibold
-          hover:bg-green-600
-          active:scale-95
-          transition
-        "
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         💬 {action.label || 'WhatsApp'}
       </a>
@@ -172,18 +151,7 @@ function DynamicAction({ action }) {
         href={action.url || MAPS_LINK}
         target="_blank"
         rel="noopener noreferrer"
-        className="
-          flex items-center gap-2
-          px-4 py-2
-          rounded-xl
-          bg-red-500
-          text-white
-          text-sm
-          font-semibold
-          hover:bg-red-600
-          active:scale-95
-          transition
-        "
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         🗺️ {action.label || 'Directions'}
       </a>
@@ -196,18 +164,7 @@ function DynamicAction({ action }) {
         href={action.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="
-          flex items-center gap-2
-          px-4 py-2
-          rounded-xl
-          bg-indigo-600
-          text-white
-          text-sm
-          font-semibold
-          hover:bg-indigo-700
-          active:scale-95
-          transition
-        "
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white text-sm font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
         🔗 {action.label || 'Open'}
       </a>
@@ -218,94 +175,77 @@ function DynamicAction({ action }) {
 }
 
 /* =========================================================
-   PHONE NUMBER → ENGLISH DIGITS
+   PHONE NUMBER SPEECH
 ========================================================= */
 
-function numberToEnglishDigits(value = '') {
-  const digitWords = {
-    0: 'zero',
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-  }
+const DIGITS = {
+  0: 'zero',
+  1: 'one',
+  2: 'two',
+  3: 'three',
+  4: 'four',
+  5: 'five',
+  6: 'six',
+  7: 'seven',
+  8: 'eight',
+  9: 'nine',
+}
 
-  return value
+function numberToEnglishDigits(value) {
+  const digits = String(value).replace(/\D/g, '')
+
+  if (!digits) return value
+
+  return digits
     .split('')
-    .map((digit) => digitWords[digit] || digit)
+    .map((digit) => DIGITS[digit])
     .join(' ')
 }
 
 /* =========================================================
-   SPEECH TEXT CLEANER
+   CLEAN TEXT FOR SPEECH
 ========================================================= */
 
-function prepareSpeechText(text = '') {
-  let result = String(text)
+function prepareSpeechText(text) {
+  let clean = String(text || '')
 
-  // Bold markdown
-  result = result.replace(
-    /\*\*(.*?)\*\*/g,
+  clean = clean.replace(/\*\*/g, '')
+  clean = clean.replace(/[#*_~]/g, '')
+  clean = clean.replace(
+    /\[(.*?)\]\(.*?\)/g,
     '$1'
   )
-
-  // Markdown links
-  result = result.replace(
-    /\[(.*?)\]\((.*?)\)/g,
-    '$1'
-  )
-
-  // Remove URLs
-  result = result.replace(
-    /https?:\/\/\S+/gi,
+  clean = clean.replace(
+    /https?:\/\/[^\s]+/gi,
     ''
   )
-
-  /*
-    Phone numbers:
-    9876543210
-    +91 9876543210
-    +91-9876543210
-  */
-
-  result = result.replace(
-    /(?:\+91[\s-]?)?[6-9]\d{9}/g,
-    (match) => {
-      const digits = match.replace(/\D/g, '')
-
-      const cleanDigits =
-        digits.length === 12 &&
-        digits.startsWith('91')
-          ? digits.slice(2)
-          : digits
-
-      return numberToEnglishDigits(
-        cleanDigits
-      )
+  clean = clean.replace(
+    /(?<!\d)([6-9]\d{9})(?!\d)/g,
+    (match) =>
+      ` ${numberToEnglishDigits(match)} `
+  )
+  clean = clean.replace(
+    /(?:\+91[\s-]?)?([6-9]\d{9})/g,
+    (full, number) => {
+      return ` nine one ${numberToEnglishDigits(
+        number
+      )} `
     }
   )
+  clean = clean
+    .replace(/₹/g, ' rupees ')
+    .replace(/%/g, ' percent ')
+    .replace(/&/g, ' and ')
+    .replace(/\//g, ' slash ')
+    .replace(/-/g, ' ')
+  clean = clean
+    .replace(/\.\.\./g, '... ')
+    .replace(/:/g, ': ')
+    .replace(/;/g, '; ')
+    .replace(/\s+/g, ' ')
+    .trim()
 
-  result = result.replace(/₹/g, ' rupees ')
-  result = result.replace(/%/g, ' percent ')
-  result = result.replace(/&/g, ' and ')
-  result = result.replace(/\//g, ' slash ')
-
-  result = result.replace(
-    /[#*_`|]/g,
-    ' '
-  )
-
-  result = result.replace(
-    /\s+/g,
-    ' '
-  )
-
-  return result.trim()
+  return clean
 }
 
 /* =========================================================
@@ -313,31 +253,35 @@ function prepareSpeechText(text = '') {
 ========================================================= */
 
 function getVoiceLabel(voice) {
-  if (!voice) return ''
-
-  return `${voice.name} (${voice.lang})`
+  if (!voice) return 'Default browser voice'
+  return `${voice.name} · ${voice.lang}`
 }
 
 function voiceScore(voice) {
+  if (!voice) return 0
+
   const lang =
-    (voice.lang || '').toLowerCase()
+    String(voice.lang || '').toLowerCase()
 
   const name =
-    (voice.name || '').toLowerCase()
+    String(voice.name || '').toLowerCase()
 
   let score = 0
 
   if (lang === 'mr-in') score += 100
   if (lang.startsWith('mr')) score += 90
-
-  if (lang === 'hi-in') score += 80
-  if (lang.startsWith('hi')) score += 70
-
-  if (lang === 'en-in') score += 65
-  if (lang.startsWith('en')) score += 50
-
+  if (lang === 'hi-in') score += 85
+  if (lang.startsWith('hi')) score += 80
+  if (lang === 'en-in') score += 75
+  if (lang.startsWith('en-in')) score += 70
   if (name.includes('google')) score += 15
-  if (name.includes('microsoft')) score += 10
+  if (name.includes('microsoft')) score += 15
+  if (
+    name.includes('compact') ||
+    name.includes('espeak')
+  ) {
+    score -= 10
+  }
 
   return score
 }
@@ -360,57 +304,44 @@ export default function Chatbot() {
 
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [listening, setListening] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
+  const [speakingMessageId, setSpeakingMessageId] = useState(null)
+  const [online, setOnline] = useState(false)
 
-  const [listening, setListening] =
-    useState(false)
+  const [voices, setVoices] = useState([])
+  const [selectedVoiceName, setSelectedVoiceName] = useState(() => {
+    try {
+      return (
+        localStorage.getItem(
+          'shivyog_selected_voice'
+        ) || ''
+      )
+    } catch {
+      return ''
+    }
+  })
 
-  const [speaking, setSpeaking] =
-    useState(false)
+  const [fallbackVoiceName, setFallbackVoiceName] = useState(() => {
+    try {
+      return (
+        localStorage.getItem(
+          'shivyog_fallback_voice'
+        ) || ''
+      )
+    } catch {
+      return ''
+    }
+  })
 
-  const [
-    speakingMessageId,
-    setSpeakingMessageId,
-  ] = useState(null)
-
-  const [online, setOnline] =
-    useState(false)
-
-  const [voices, setVoices] =
-    useState([])
-
-  const [
-    selectedVoiceName,
-    setSelectedVoiceName,
-  ] = useState('')
-
-  const [
-    fallbackVoiceName,
-    setFallbackVoiceName,
-  ] = useState('')
-
-  const recognitionRef =
-    useRef(null)
-
-  const voiceTranscriptRef =
-    useRef('')
-
-  const loadingRef =
-    useRef(false)
-
-  const messagesEndRef =
-    useRef(null)
-
-  /* =========================================================
-     KEEP LOADING REF UPDATED
-  ========================================================= */
+  const recognitionRef = useRef(null)
+  const voiceTranscriptRef = useRef('')
+  const loadingRef = useRef(false)
+  const messagesEndRef = useRef(null)
 
   useEffect(() => {
     loadingRef.current = loading
   }, [loading])
-
-  /* =========================================================
-     CHECK BACKEND
-  ========================================================= */
 
   async function checkBackend() {
     try {
@@ -434,24 +365,110 @@ export default function Chatbot() {
         'Backend status error:',
         error
       )
-
       setOnline(false)
     }
   }
 
-  /* =========================================================
-     VOICE INITIALIZATION
-  ========================================================= */
+  function loadVoices() {
+    if (
+      !('speechSynthesis' in window)
+    ) {
+      return
+    }
+
+    const available =
+      window.speechSynthesis.getVoices()
+
+    if (!available.length) return
+
+    const sorted = [...available].sort(
+      (a, b) =>
+        voiceScore(b) - voiceScore(a)
+    )
+
+    setVoices(sorted)
+
+    setSelectedVoiceName((current) => {
+      if (
+        current &&
+        available.some(
+          (voice) =>
+            voice.name === current
+        )
+      ) {
+        return current
+      }
+
+      const best = sorted[0]
+
+      if (!best) return ''
+
+      try {
+        localStorage.setItem(
+          'shivyog_selected_voice',
+          best.name
+        )
+      } catch {}
+
+      return best.name
+    })
+
+    setFallbackVoiceName((current) => {
+      if (
+        current &&
+        available.some(
+          (voice) =>
+            voice.name === current
+        )
+      ) {
+        return current
+      }
+
+      const fallback =
+        sorted.find(
+          (voice) =>
+            voice.name !==
+            selectedVoiceName
+        ) || sorted[1] || sorted[0]
+
+      if (!fallback) return ''
+
+      try {
+        localStorage.setItem(
+          'shivyog_fallback_voice',
+          fallback.name
+        )
+      } catch {}
+
+      return fallback.name
+    })
+  }
 
   useEffect(() => {
     checkBackend()
+    loadVoices()
+
+    if (
+      'speechSynthesis' in window
+    ) {
+      window.speechSynthesis.onvoiceschanged =
+        loadVoices
+    }
 
     const SpeechRecognition =
       window.SpeechRecognition ||
       window.webkitSpeechRecognition
 
     if (!SpeechRecognition) {
-      return
+      return () => {
+        if (
+          'speechSynthesis' in
+          window
+        ) {
+          window.speechSynthesis.onvoiceschanged =
+            null
+        }
+      }
     }
 
     const recognition =
@@ -459,20 +476,17 @@ export default function Chatbot() {
 
     recognition.continuous = false
     recognition.interimResults = true
-
-    // Marathi + Indian mixed speech
     recognition.lang = 'mr-IN'
-
     recognition.maxAlternatives = 1
 
     recognition.onstart = () => {
       setListening(true)
-
-      voiceTranscriptRef.current =
-        ''
+      voiceTranscriptRef.current = ''
     }
 
-    recognition.onresult = (event) => {
+    recognition.onresult = (
+      event
+    ) => {
       let transcript = ''
 
       for (
@@ -491,17 +505,17 @@ export default function Chatbot() {
       if (transcript) {
         voiceTranscriptRef.current =
           transcript
-
         setInput(transcript)
       }
     }
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (
+      event
+    ) => {
       console.error(
         'Speech recognition error:',
         event.error
       )
-
       setListening(false)
 
       if (
@@ -515,15 +529,6 @@ export default function Chatbot() {
         )
       }
     }
-
-    /*
-      IMPORTANT:
-
-      Voice बोलून थांबल्यावर:
-      transcript → sendMessage(..., true)
-
-      true = voice input
-    */
 
     recognition.onend = () => {
       setListening(false)
@@ -555,126 +560,74 @@ export default function Chatbot() {
         recognition.stop()
       } catch {}
 
-      window.speechSynthesis?.cancel()
+      if (
+        'speechSynthesis' in window
+      ) {
+        window.speechSynthesis.cancel()
+        window.speechSynthesis.onvoiceschanged =
+          null
+      }
     }
   }, [])
-
-  /* =========================================================
-     LOAD SPEECH SYNTHESIS VOICES
-  ========================================================= */
-
-  useEffect(() => {
-    if (!('speechSynthesis' in window)) {
-      return
-    }
-
-    function loadVoices() {
-      const available =
-        window.speechSynthesis.getVoices()
-
-      if (!available.length) return
-
-      const sorted = [
-        ...available,
-      ].sort(
-        (a, b) =>
-          voiceScore(b) -
-          voiceScore(a)
-      )
-
-      setVoices(sorted)
-
-      const savedPrimary =
-        localStorage.getItem(
-          'shivyog_primary_voice'
-        )
-
-      const savedFallback =
-        localStorage.getItem(
-          'shivyog_fallback_voice'
-        )
-
-      const primaryExists =
-        sorted.some(
-          (voice) =>
-            voice.name ===
-            savedPrimary
-        )
-
-      const fallbackExists =
-        sorted.some(
-          (voice) =>
-            voice.name ===
-            savedFallback
-        )
-
-      setSelectedVoiceName(
-        primaryExists
-          ? savedPrimary
-          : sorted[0]?.name || ''
-      )
-
-      setFallbackVoiceName(
-        fallbackExists
-          ? savedFallback
-          : sorted[1]?.name ||
-              sorted[0]?.name ||
-              ''
-      )
-    }
-
-    loadVoices()
-
-    window.speechSynthesis.addEventListener(
-      'voiceschanged',
-      loadVoices
-    )
-
-    return () => {
-      window.speechSynthesis.removeEventListener(
-        'voiceschanged',
-        loadVoices
-      )
-    }
-  }, [])
-
-  /* =========================================================
-     INNER CHAT AUTO SCROLL
-  ========================================================= */
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView(
       {
         behavior: 'smooth',
-        block: 'end',
       }
     )
   }, [messages, loading])
 
-  /* =========================================================
-     START / STOP VOICE
-  ========================================================= */
+  useEffect(() => {
+    try {
+      if (selectedVoiceName) {
+        localStorage.setItem(
+          'shivyog_selected_voice',
+          selectedVoiceName
+        )
+      }
+    } catch {}
+  }, [selectedVoiceName])
+
+  useEffect(() => {
+    try {
+      if (fallbackVoiceName) {
+        localStorage.setItem(
+          'shivyog_fallback_voice',
+          fallbackVoiceName
+        )
+      }
+    } catch {}
+  }, [fallbackVoiceName])
 
   function startVoice() {
-    if (!recognitionRef.current) {
+    if (
+      !recognitionRef.current
+    ) {
       alert(
         'Voice input तुमच्या browser मध्ये supported नाही. Chrome वापरा.'
       )
-
       return
     }
 
-    // Stop currently speaking answer
-    stopSpeaking()
+    if (loading) return
 
     if (listening) {
-      recognitionRef.current.stop()
+      try {
+        recognitionRef.current.stop()
+      } catch {}
       return
     }
 
-    voiceTranscriptRef.current =
-      ''
+    if (
+      'speechSynthesis' in window
+    ) {
+      window.speechSynthesis.cancel()
+      setSpeaking(false)
+      setSpeakingMessageId(null)
+    }
 
+    voiceTranscriptRef.current = ''
     setInput('')
 
     try {
@@ -687,11 +640,8 @@ export default function Chatbot() {
     }
   }
 
-  /* =========================================================
-     GET SELECTED VOICES
-  ========================================================= */
-
   function getSelectedVoice() {
+    if (!voices.length) return null
     return (
       voices.find(
         (voice) =>
@@ -702,18 +652,92 @@ export default function Chatbot() {
   }
 
   function getFallbackVoice() {
+    if (!voices.length) return null
     return (
       voices.find(
         (voice) =>
           voice.name ===
           fallbackVoiceName
-      ) || null
+      ) ||
+      voices.find(
+        (voice) =>
+          voice.name !==
+          selectedVoiceName
+      ) ||
+      voices[0] ||
+      null
     )
   }
 
-  /* =========================================================
-     SPEAK ANSWER
-  ========================================================= */
+  function getBestVoiceForText(
+    text
+  ) {
+    const selected =
+      getSelectedVoice()
+    const fallback =
+      getFallbackVoice()
+
+    if (!text) {
+      return (
+        selected ||
+        fallback ||
+        voices[0] ||
+        null
+      )
+    }
+
+    if (selected) {
+      return selected
+    }
+
+    const lower =
+      String(text).toLowerCase()
+
+    const hasMarathi =
+      /[\u0900-\u097F]/.test(text)
+
+    if (hasMarathi) {
+      const marathi =
+        voices.find((voice) =>
+          String(voice.lang)
+            .toLowerCase()
+            .startsWith('mr')
+        )
+
+      if (marathi) return marathi
+    }
+
+    if (
+      /[a-z]/i.test(lower)
+    ) {
+      const englishIndia =
+        voices.find(
+          (voice) =>
+            String(voice.lang)
+              .toLowerCase() ===
+            'en-in'
+        )
+
+      if (englishIndia) {
+        return englishIndia
+      }
+
+      const english =
+        voices.find((voice) =>
+          String(voice.lang)
+            .toLowerCase()
+            .startsWith('en')
+        )
+
+      if (english) return english
+    }
+
+    return (
+      fallback ||
+      voices[0] ||
+      null
+    )
+  }
 
   function speakAnswer(
     text,
@@ -722,56 +746,111 @@ export default function Chatbot() {
     if (
       !('speechSynthesis' in window)
     ) {
+      alert(
+        'Your browser does not support text-to-speech.'
+      )
       return
     }
+
+    if (!text) return
+
+    if (
+      speaking &&
+      speakingMessageId ===
+        messageId
+    ) {
+      stopSpeaking()
+      return
+    }
+
+    window.speechSynthesis.cancel()
+    setSpeaking(false)
+    setSpeakingMessageId(null)
 
     const cleanText =
       prepareSpeechText(text)
 
     if (!cleanText) return
 
-    window.speechSynthesis.cancel()
+    const primaryVoice =
+      getBestVoiceForText(
+        cleanText
+      )
+
+    const fallbackVoice =
+      getFallbackVoice()
+
+    const chunks =
+      cleanText
+        .split(
+          /(?<=[.!?।])\s+/
+        )
+        .map((item) =>
+          item.trim()
+        )
+        .filter(Boolean)
+
+    const finalChunks =
+      chunks.length
+        ? chunks
+        : [cleanText]
+
+    let currentIndex = 0
 
     setSpeaking(true)
     setSpeakingMessageId(
       messageId
     )
 
-    /*
-      Sentence-by-sentence speech
-      makes speech more natural.
-    */
-
-    const chunks =
-      cleanText.match(
-        /[^.!?]+[.!?]+|[^.!?]+$/g
-      ) || [cleanText]
-
-    const primaryVoice =
-      getSelectedVoice()
-
-    const fallbackVoice =
-      getFallbackVoice()
-
-    let currentIndex = 0
-
     function speakNext() {
       if (
         currentIndex >=
-        chunks.length
+        finalChunks.length
       ) {
         setSpeaking(false)
-        setSpeakingMessageId(null)
+        setSpeakingMessageId(
+          null
+        )
         return
       }
 
       const chunk =
-        chunks[currentIndex].trim()
+        finalChunks[currentIndex]
 
-      if (!chunk) {
-        currentIndex++
-        speakNext()
-        return
+      currentIndex++
+
+      const hasEnglish =
+        /[a-z]/i.test(chunk)
+
+      let voice =
+        primaryVoice ||
+        fallbackVoice
+
+      if (hasEnglish) {
+        const englishVoice =
+          voices.find(
+            (item) =>
+              String(item.lang)
+                .toLowerCase() ===
+              'en-in'
+          ) ||
+          voices.find((item) =>
+            String(item.lang)
+              .toLowerCase()
+              .startsWith('en')
+          )
+
+        if (
+          englishVoice &&
+          primaryVoice &&
+          !String(
+            primaryVoice.lang
+          )
+            .toLowerCase()
+            .startsWith('en')
+        ) {
+          voice = englishVoice
+        }
       }
 
       const utterance =
@@ -779,53 +858,13 @@ export default function Chatbot() {
           chunk
         )
 
-      let voiceToUse =
-        primaryVoice
-
-      /*
-        English text / phone numbers:
-        prefer Indian English voice
-      */
-
-      const containsEnglish =
-        /[a-zA-Z]/.test(chunk)
-
-      if (
-        containsEnglish &&
-        primaryVoice &&
-        !primaryVoice.lang
-          .toLowerCase()
-          .startsWith('en')
-      ) {
-        const englishIndianVoice =
-          voices.find(
-            (voice) =>
-              voice.lang
-                .toLowerCase()
-                .startsWith(
-                  'en-in'
-                )
-          )
-
-        const englishVoice =
-          englishIndianVoice ||
-          voices.find(
-            (voice) =>
-              voice.lang
-                .toLowerCase()
-                .startsWith('en')
-          )
-
-        if (englishVoice) {
-          voiceToUse =
-            englishVoice
-        }
+      if (voice) {
+        utterance.voice = voice
+        utterance.lang =
+          voice.lang
+      } else {
+        utterance.lang = 'mr-IN'
       }
-
-      utterance.voice =
-        voiceToUse ||
-        fallbackVoice ||
-        null
 
       utterance.rate = 0.92
       utterance.pitch = 1.02
@@ -839,55 +878,66 @@ export default function Chatbot() {
       }
 
       utterance.onend = () => {
-        currentIndex++
-
         setTimeout(() => {
           speakNext()
         }, 90)
       }
 
-      utterance.onerror = () => {
-        /*
-          Fallback voice
-        */
+      utterance.onerror = (
+        error
+      ) => {
+        console.error(
+          'Speech synthesis error:',
+          error
+        )
 
         if (
           fallbackVoice &&
-          utterance.voice?.name !==
+          voice?.name !==
             fallbackVoice.name
         ) {
-          const retry =
+          const fallbackUtterance =
             new SpeechSynthesisUtterance(
               chunk
             )
 
-          retry.voice =
+          fallbackUtterance.voice =
             fallbackVoice
+          fallbackUtterance.lang =
+            fallbackVoice.lang
+          fallbackUtterance.rate =
+            0.92
+          fallbackUtterance.pitch =
+            1.02
+          fallbackUtterance.volume = 1
 
-          retry.rate = 0.92
-          retry.pitch = 1.02
-          retry.volume = 1
+          fallbackUtterance.onend =
+            () => {
+              setTimeout(
+                speakNext,
+                90
+              )
+            }
 
-          retry.onend = () => {
-            currentIndex++
-
-            setTimeout(() => {
-              speakNext()
-            }, 90)
-          }
-
-          retry.onerror = () => {
-            currentIndex++
-            speakNext()
-          }
+          fallbackUtterance.onerror =
+            () => {
+              setSpeaking(false)
+              setSpeakingMessageId(
+                null
+              )
+            }
 
           window.speechSynthesis.speak(
-            retry
+            fallbackUtterance
           )
-        } else {
-          currentIndex++
-          speakNext()
+
+          return
         }
+
+        setSpeaking(false)
+        setSpeakingMessageId(
+          null
+        )
       }
 
       window.speechSynthesis.speak(
@@ -897,10 +947,6 @@ export default function Chatbot() {
 
     speakNext()
   }
-
-  /* =========================================================
-     STOP SPEAKING
-  ========================================================= */
 
   function stopSpeaking() {
     if (
@@ -913,42 +959,6 @@ export default function Chatbot() {
     setSpeakingMessageId(null)
   }
 
-  /* =========================================================
-     CHANGE VOICE
-  ========================================================= */
-
-  function handlePrimaryVoiceChange(
-    event
-  ) {
-    const value =
-      event.target.value
-
-    setSelectedVoiceName(value)
-
-    localStorage.setItem(
-      'shivyog_primary_voice',
-      value
-    )
-  }
-
-  function handleFallbackVoiceChange(
-    event
-  ) {
-    const value =
-      event.target.value
-
-    setFallbackVoiceName(value)
-
-    localStorage.setItem(
-      'shivyog_fallback_voice',
-      value
-    )
-  }
-
-  /* =========================================================
-     SEND MESSAGE
-  ========================================================= */
-
   async function sendMessage(
     customText = '',
     fromVoice = false
@@ -959,34 +969,25 @@ export default function Chatbot() {
 
     if (
       !question ||
-      loading
+      loadingRef.current
     ) {
       return
     }
 
-    /*
-      Stop previous answer speech
-    */
-
-    stopSpeaking()
+    if (fromVoice) {
+      setListening(false)
+    }
 
     setInput('')
 
     const userMessage = {
       id:
-        `user-${Date.now()}`,
-
+        Date.now(),
       role: 'user',
-
       content: question,
-
-      /*
-        Important:
-        identify voice/text user
-      */
-
-      fromVoice:
-        Boolean(fromVoice),
+      fromVoice: Boolean(
+        fromVoice
+      ),
     }
 
     setMessages((prev) => [
@@ -995,6 +996,7 @@ export default function Chatbot() {
     ])
 
     setLoading(true)
+    loadingRef.current = true
 
     try {
       const response =
@@ -1002,12 +1004,10 @@ export default function Chatbot() {
           `${API_URL}/chat`,
           {
             method: 'POST',
-
             headers: {
               'Content-Type':
                 'application/json',
             },
-
             body: JSON.stringify({
               question,
             }),
@@ -1022,7 +1022,9 @@ export default function Chatbot() {
           const errorData =
             await response.json()
 
-          if (errorData.detail) {
+          if (
+            errorData.detail
+          ) {
             errorMessage =
               errorData.detail
           }
@@ -1042,21 +1044,15 @@ export default function Chatbot() {
 
       const botMessage = {
         id:
-          `bot-${Date.now()}`,
-
+          Date.now() + 1,
         role: 'assistant',
-
         content: answer,
-
         sources:
           data.sources || [],
-
         distances:
           data.distances || [],
-
         actions:
           data.actions || [],
-
         suggestions:
           data.suggestions ||
           generateSuggestions(
@@ -1070,18 +1066,6 @@ export default function Chatbot() {
       ])
 
       setOnline(true)
-
-      /*
-        ⭐ IMPORTANT FUNCTIONALITY ⭐
-
-        TEXT INPUT:
-        fromVoice = false
-        → NO AUTO SPEECH
-
-        VOICE INPUT:
-        fromVoice = true
-        → AUTO SPEECH
-      */
 
       if (fromVoice) {
         setTimeout(() => {
@@ -1103,10 +1087,8 @@ export default function Chatbot() {
         ...prev,
         {
           id:
-            `error-${Date.now()}`,
-
+            Date.now() + 2,
           role: 'assistant',
-
           content:
             `⚠️ Backend connect होत नाहीये.
 
@@ -1118,12 +1100,9 @@ ${API_URL}`,
       ])
     } finally {
       setLoading(false)
+      loadingRef.current = false
     }
   }
-
-  /* =========================================================
-     DYNAMIC SUGGESTIONS
-  ========================================================= */
 
   function generateSuggestions(
     question
@@ -1299,37 +1278,35 @@ ${API_URL}`,
     ]
   }
 
-  /* =========================================================
-     CLEAR CHAT
-  ========================================================= */
-
   function clearChat() {
-    stopSpeaking()
+    if (
+      'speechSynthesis' in window
+    ) {
+      window.speechSynthesis.cancel()
+    }
 
-    if (recognitionRef.current) {
+    if (
+      recognitionRef.current
+    ) {
       try {
         recognitionRef.current.stop()
       } catch {}
     }
 
     setSpeaking(false)
+    setSpeakingMessageId(null)
     setListening(false)
 
     voiceTranscriptRef.current =
       ''
 
-    setInput('')
-
     setMessages([
       {
         id:
-          `welcome-${Date.now()}`,
-
+          Date.now(),
         role: 'assistant',
-
         content:
           'Namaskar! 👋 Punha suru करूया. Tumhala kay mahiti pahije?',
-
         suggestions:
           INITIAL_SUGGESTIONS.slice(
             0,
@@ -1339,1262 +1316,489 @@ ${API_URL}`,
     ])
   }
 
-  /* =========================================================
-     ENTER KEY
-  ========================================================= */
-
   function handleKeyDown(e) {
     if (
       e.key === 'Enter' &&
       !e.shiftKey
     ) {
       e.preventDefault()
-
       sendMessage()
     }
   }
 
-  /* =========================================================
-     RENDER
-  ========================================================= */
-
   return (
-    /*
-      ⭐ FULL SCREEN MOVIE STYLE
-
-      Outer scroll = OFF
-      Inner messages scroll = ON
-    */
-
-    <div
-      className="
-        fixed
-        inset-0
-        h-[100dvh]
-        w-full
-        overflow-hidden
-        bg-slate-50
-        flex
-        flex-col
-      "
-    >
+    // 🔥 MAIN CONTAINER - NO OUTER SCROLL
+    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden">
 
       {/* =====================================================
-          EXISTING SHOP NAVBAR
+          NAVBAR
       ===================================================== */}
+      <Navbar />
 
-      <div className="flex-shrink-0 z-50">
-        <Navbar />
+      {/* =====================================================
+          HEADER - FIXED TOP
+      ===================================================== */}
+      <div className="flex-shrink-0 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 animate-gradient-xy bg-[length:200%_200%]"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-white/20 blur-xl animate-pulse"></div>
+                <div
+                  className={`relative h-9 w-9 md:h-11 md:w-11 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-lg md:text-xl shadow-lg transition-all ${
+                    speaking
+                      ? 'scale-110 shadow-2xl animate-bounce'
+                      : ''
+                  }`}
+                >
+                  {speaking ? '🗣️' : '🤖'}
+                </div>
+              </div>
+
+              <div>
+                <h1 className="text-sm md:text-xl font-bold text-white drop-shadow-lg">
+                  Shivyog AI Assistant
+                </h1>
+                <p className="text-[8px] md:text-[10px] text-white/80 font-medium">
+                  ⚡ 24/7 Smart Assistant
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div
+                className={`flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-[8px] md:text-[10px] font-semibold backdrop-blur ${
+                  online
+                    ? 'bg-green-500/30 text-white'
+                    : 'bg-red-500/30 text-white'
+                }`}
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    online
+                      ? 'bg-green-300 animate-pulse'
+                      : 'bg-red-300'
+                  }`}
+                />
+                <span className="hidden xs:inline">{online ? 'Online' : 'Offline'}</span>
+              </div>
+
+              <button
+                onClick={clearChat}
+                className="h-8 w-8 md:h-9 md:w-9 rounded-xl bg-white/10 hover:bg-white/20 transition-all duration-300 flex items-center justify-center text-sm backdrop-blur hover:scale-110 active:scale-90"
+                title="Clear chat"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-
       {/* =====================================================
-          CHATBOT MAIN
+          CHAT AREA - FILLS REMAINING SPACE
       ===================================================== */}
+      <div className="flex-1 flex flex-col max-w-6xl w-full mx-auto px-2 md:px-4 py-2 md:py-3 overflow-hidden min-h-0">
+        <div className="flex-1 flex flex-col bg-white/80 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl border border-white/50 overflow-hidden min-h-0">
+          
+          {/* =================================================
+              MESSAGE AREA - ONLY THIS SCROLLS
+          ================================================= */}
+          <div className="flex-1 overflow-y-auto px-2 md:px-6 py-3 md:py-5 scrollbar-thin scrollbar-thumb-indigo-200 scrollbar-track-transparent min-h-0">
+            <div className="max-w-4xl mx-auto space-y-1">
+              {messages.map(
+                (message) => {
+                  const isUser =
+                    message.role === 'user'
 
-      <section
-        className="
-          flex-1
-          min-h-0
-          overflow-hidden
-          flex
-          flex-col
-          pt-16
-          md:pt-20
-        "
-      >
+                  const isVoiceUser =
+                    isUser && message.fromVoice
 
-        {/* =================================================
-            CHATBOT HEADER
-        ================================================= */}
+                  const isSpeakingThis =
+                    speaking && speakingMessageId === message.id
 
-        <div
-          className="
-            flex-shrink-0
-            bg-gradient-to-r
-            from-indigo-700
-            via-blue-600
-            to-sky-500
-            text-white
-          "
-        >
-
-          <div
-            className="
-              max-w-6xl
-              mx-auto
-              px-3
-              md:px-4
-              py-3
-              md:py-5
-            "
-          >
-
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-                gap-3
-              "
-            >
-
-              {/* LEFT */}
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2.5
-                  min-w-0
-                "
-              >
-
-                <div
-                  className="
-                    h-10
-                    w-10
-                    md:h-12
-                    md:w-12
-                    flex-shrink-0
-                    rounded-2xl
-                    bg-white/15
-                    backdrop-blur
-                    flex
-                    items-center
-                    justify-center
-                    text-xl
-                    md:text-2xl
-                    shadow-lg
-                  "
-                >
-                  🤖
-                </div>
-
-                <div className="min-w-0">
-
-                  <h1
-                    className="
-                      text-base
-                      md:text-2xl
-                      font-bold
-                      truncate
-                    "
-                  >
-                    Shivyog AI Assistant
-                  </h1>
-
-                  <p
-                    className="
-                      text-[10px]
-                      md:text-sm
-                      text-white/80
-                    "
-                  >
-                    Products · Services · Support
-                  </p>
-
-                </div>
-
-              </div>
-
-
-              {/* RIGHT */}
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-1.5
-                  md:gap-2
-                  flex-shrink-0
-                "
-              >
-
-                {/* VOICE SELECT DESKTOP */}
-
-                {voices.length > 0 && (
-                  <div
-                    className="
-                      hidden
-                      lg:flex
-                      items-center
-                      gap-2
-                    "
-                  >
-
-                    <select
-                      value={
-                        selectedVoiceName
-                      }
-                      onChange={
-                        handlePrimaryVoiceChange
-                      }
-                      className="
-                        max-w-[180px]
-                        rounded-lg
-                        bg-white
-                        text-slate-700
-                        px-2
-                        py-1.5
-                        text-xs
-                        outline-none
-                      "
+                  return (
+                    <div
+                      key={message.id}
+                      className={`flex gap-2 md:gap-3 mb-3 md:mb-5 ${
+                        isUser ? 'justify-end' : 'justify-start'
+                      } animate-fadeInUp`}
                     >
-                      {voices.map(
-                        (voice) => (
-                          <option
-                            key={
-                              `main-${voice.name}-${voice.lang}`
-                            }
-                            value={
-                              voice.name
-                            }
-                          >
-                            Main:{' '}
-                            {getVoiceLabel(
-                              voice
-                            )}
-                          </option>
-                        )
-                      )}
-                    </select>
-
-                    <select
-                      value={
-                        fallbackVoiceName
-                      }
-                      onChange={
-                        handleFallbackVoiceChange
-                      }
-                      className="
-                        max-w-[180px]
-                        rounded-lg
-                        bg-white
-                        text-slate-700
-                        px-2
-                        py-1.5
-                        text-xs
-                        outline-none
-                      "
-                    >
-                      {voices.map(
-                        (voice) => (
-                          <option
-                            key={
-                              `fallback-${voice.name}-${voice.lang}`
-                            }
-                            value={
-                              voice.name
-                            }
-                          >
-                            Fallback:{' '}
-                            {getVoiceLabel(
-                              voice
-                            )}
-                          </option>
-                        )
-                      )}
-                    </select>
-
-                  </div>
-                )}
-
-
-                {/* ONLINE */}
-
-                <div
-                  className={`
-                    flex
-                    items-center
-                    gap-1.5
-                    px-2
-                    md:px-3
-                    py-1.5
-                    md:py-2
-                    rounded-full
-                    text-[10px]
-                    md:text-xs
-                    font-semibold
-                    ${
-                      online
-                        ? 'bg-green-400/20'
-                        : 'bg-red-400/20'
-                    }
-                  `}
-                >
-
-                  <span
-                    className={`
-                      h-2
-                      w-2
-                      rounded-full
-                      ${
-                        online
-                          ? 'bg-green-300'
-                          : 'bg-red-300'
-                      }
-                    `}
-                  />
-
-                  <span className="hidden sm:inline">
-                    {online
-                      ? 'AI Online'
-                      : 'Offline'}
-                  </span>
-
-                </div>
-
-
-                {/* CLEAR */}
-
-                <button
-                  onClick={
-                    clearChat
-                  }
-                  className="
-                    h-9
-                    w-9
-                    md:h-10
-                    md:w-10
-                    rounded-xl
-                    bg-white/10
-                    hover:bg-white/20
-                    active:scale-90
-                    transition
-                  "
-                  title="Clear chat"
-                >
-                  🗑️
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* =================================================
-            CHAT AREA
-        ================================================= */}
-
-        <div
-          className="
-            flex-1
-            min-h-0
-            overflow-hidden
-            max-w-6xl
-            w-full
-            mx-auto
-            px-0
-            md:px-5
-            py-0
-            md:py-4
-          "
-        >
-
-          <div
-            className="
-              h-full
-              bg-white
-              md:rounded-3xl
-              md:shadow-xl
-              md:border
-              md:border-slate-200
-              overflow-hidden
-              flex
-              flex-col
-            "
-          >
-
-            {/* =============================================
-                MESSAGE AREA
-                ONLY THIS SCROLLS
-            ============================================= */}
-
-            <div
-              className="
-                flex-1
-                min-h-0
-                overflow-y-auto
-                overflow-x-hidden
-                overscroll-contain
-                scroll-smooth
-                px-3
-                sm:px-4
-                md:px-8
-                py-4
-                md:py-6
-              "
-            >
-
-              <div
-                className="
-                  max-w-4xl
-                  mx-auto
-                "
-              >
-
-                {messages.map(
-                  (message) => {
-
-                    const isUser =
-                      message.role ===
-                      'user'
-
-                    const isSpeaking =
-                      speakingMessageId ===
-                      message.id
-
-                    return (
-                      <div
-                        key={
-                          message.id
-                        }
-                        className={`
-                          flex
-                          gap-2
-                          md:gap-3
-                          mb-4
-                          md:mb-6
-                          ${
-                            isUser
-                              ? 'justify-end'
-                              : 'justify-start'
-                          }
-                        `}
-                      >
-
-                        {/* BOT ICON */}
-
-                        {!isUser && (
-                          <div
-                            className="
-                              flex-shrink-0
-                              h-8
-                              w-8
-                              md:h-9
-                              md:w-9
-                              rounded-xl
-                              bg-indigo-50
-                              flex
-                              items-center
-                              justify-center
-                              text-sm
-                            "
-                          >
-                            {isSpeaking
-                              ? '🗣️'
-                              : '🤖'}
-                          </div>
-                        )}
-
-
-                        {/* MESSAGE */}
-
+                      {/* BOT ICON */}
+                      {!isUser && (
                         <div
-                          className={`
-                            max-w-[88%]
-                            md:max-w-[75%]
-                            min-w-0
-                            ${
-                              isUser
-                                ? 'order-first'
-                                : ''
-                            }
-                          `}
+                          className={`flex-shrink-0 h-7 w-7 md:h-8 md:w-8 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center transition-all shadow-md text-sm ${
+                            isSpeakingThis
+                              ? 'scale-110 shadow-lg ring-2 ring-indigo-300 animate-pulse'
+                              : ''
+                          }`}
                         >
+                          {isSpeakingThis ? '🗣️' : '🤖'}
+                        </div>
+                      )}
 
-                          {/* LABEL */}
-
-                          <div
-                            className="
-                              mb-1
-                              px-1
-                              text-[9px]
-                              md:text-[10px]
-                              text-slate-400
-                              font-semibold
-                            "
-                          >
-                            {isUser
-                              ? message.fromVoice
-                                ? '🎤 You · Voice'
-                                : '👤 You · Text'
-                              : isSpeaking
-                              ? '🗣️ AI · Speaking'
-                              : '🤖 Shivyog AI'}
-                          </div>
-
-
-                          {/* BUBBLE */}
-
-                          <div
-                            className={`
-                              px-3
-                              md:px-4
-                              py-2.5
-                              md:py-3
-                              rounded-2xl
-                              text-sm
-                              leading-7
-                              break-words
-                              ${
-                                isUser
-                                  ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-br-md'
-                                  : 'bg-slate-50 border border-slate-200 text-slate-800 rounded-bl-md'
-                              }
-                            `}
-                          >
-                            {renderAnswer(
-                              message.content
-                            )}
-                          </div>
-
-
-                          {/* ACTION BUTTONS */}
-
-                          {!isUser &&
-                            message.actions
-                              ?.length >
-                              0 && (
-                              <div
-                                className="
-                                  flex
-                                  flex-wrap
-                                  gap-2
-                                  mt-3
-                                "
-                              >
-                                {message.actions.map(
-                                  (
-                                    action,
-                                    index
-                                  ) => (
-                                    <DynamicAction
-                                      key={
-                                        index
-                                      }
-                                      action={
-                                        action
-                                      }
-                                    />
-                                  )
-                                )}
-                              </div>
-                            )}
-
-
-                          {/* SOURCES */}
-
-                          {!isUser &&
-                            message.sources
-                              ?.length >
-                              0 && (
-                              <div
-                                className="
-                                  mt-2
-                                  text-[10px]
-                                  text-slate-400
-                                "
-                              >
-                                📚{' '}
-                                {
-                                  message
-                                    .sources
-                                    .length
-                                }{' '}
-                                shop knowledge
-                                sources used
-                              </div>
-                            )}
-
-
-                          {/* LISTEN */}
-
-                          {!isUser && (
-                            <div
-                              className="
-                                mt-2
-                              "
-                            >
-
-                              <button
-                                onClick={() =>
-                                  isSpeaking
-                                    ? stopSpeaking()
-                                    : speakAnswer(
-                                        message.content,
-                                        message.id
-                                      )
-                                }
-                                className="
-                                  text-xs
-                                  px-3
-                                  py-1.5
-                                  rounded-lg
-                                  border
-                                  border-slate-200
-                                  hover:bg-slate-50
-                                  active:scale-95
-                                  text-slate-500
-                                  transition
-                                "
-                              >
-                                {isSpeaking
-                                  ? '⏹ Stop'
-                                  : '🔊 Listen'}
-                              </button>
-
-                            </div>
-                          )}
-
-
-                          {/* SUGGESTIONS */}
-
-                          {!isUser &&
-                            message
-                              .suggestions
-                              ?.length >
-                              0 && (
-                              <div
-                                className="
-                                  flex
-                                  flex-wrap
-                                  gap-2
-                                  mt-3
-                                "
-                              >
-
-                                {message.suggestions.map(
-                                  (
-                                    suggestion,
-                                    index
-                                  ) => (
-                                    <button
-                                      key={
-                                        index
-                                      }
-                                      onClick={() =>
-                                        sendMessage(
-                                          suggestion.text,
-                                          false
-                                        )
-                                      }
-                                      disabled={
-                                        loading
-                                      }
-                                      className="
-                                        px-3
-                                        py-2
-                                        rounded-xl
-                                        border
-                                        border-indigo-100
-                                        bg-indigo-50/60
-                                        hover:bg-indigo-100
-                                        active:scale-95
-                                        text-xs
-                                        text-indigo-700
-                                        font-medium
-                                        transition
-                                        disabled:opacity-50
-                                      "
-                                    >
-                                      {
-                                        suggestion.icon
-                                      }{' '}
-                                      {
-                                        suggestion.text
-                                      }
-                                    </button>
-                                  )
-                                )}
-
-                              </div>
-                            )}
-
+                      {/* MESSAGE */}
+                      <div
+                        className={`max-w-[88%] md:max-w-[75%] ${
+                          isUser ? 'order-first' : ''
+                        }`}
+                      >
+                        {/* SPEAKER LABEL */}
+                        <div
+                          className={`text-[8px] md:text-[9px] font-semibold mb-0.5 ${
+                            isUser
+                              ? 'text-right text-indigo-500'
+                              : 'text-left text-purple-400'
+                          }`}
+                        >
+                          {isUser
+                            ? isVoiceUser
+                              ? '🎤 You · Voice'
+                              : '👤 You'
+                            : isSpeakingThis
+                            ? '🗣️ Shivyog AI · Speaking'
+                            : '🤖 Shivyog AI'}
                         </div>
 
+                        {/* MESSAGE BUBBLE */}
+                        <div
+                          className={`px-3 py-2 md:px-4 md:py-2.5 rounded-2xl text-xs md:text-sm leading-6 md:leading-7 shadow-md transition-all ${
+                            isUser
+                              ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white rounded-br-md hover:shadow-lg'
+                              : 'bg-white/70 backdrop-blur border border-indigo-100 text-slate-800 rounded-bl-md hover:shadow-lg'
+                          }`}
+                        >
+                          {renderAnswer(message.content)}
+                        </div>
 
-                        {/* USER ICON */}
-
-                        {isUser && (
-                          <div
-                            className={`
-                              flex-shrink-0
-                              h-8
-                              w-8
-                              md:h-9
-                              md:w-9
-                              rounded-xl
-                              text-white
-                              flex
-                              items-center
-                              justify-center
-                              text-sm
-                              ${
-                                message.fromVoice
-                                  ? 'bg-violet-600'
-                                  : 'bg-indigo-600'
-                              }
-                            `}
-                          >
-                            {message.fromVoice
-                              ? '🎤'
-                              : '👤'}
+                        {/* ACTION BUTTONS */}
+                        {!isUser && message.actions?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {message.actions.map(
+                              (action, index) => (
+                                <DynamicAction key={index} action={action} />
+                              )
+                            )}
                           </div>
                         )}
 
+                        {/* SOURCES */}
+                        {!isUser && message.sources?.length > 0 && (
+                          <div className="mt-1 flex items-center gap-1 text-[7px] md:text-[9px] text-purple-400">
+                            <span>📚</span>
+                            <span>{message.sources.length} sources</span>
+                          </div>
+                        )}
+
+                        {/* LISTEN / STOP */}
+                        {!isUser && (
+                          <div className="mt-1">
+                            <button
+                              onClick={() =>
+                                speakAnswer(message.content, message.id)
+                              }
+                              className={`group text-[9px] md:text-[10px] px-2 py-0.5 md:px-2.5 md:py-1 rounded-xl border transition-all duration-300 flex items-center gap-1 ${
+                                isSpeakingThis
+                                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-indigo-500 shadow-md'
+                                  : 'border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 text-slate-500 hover:text-indigo-600'
+                              }`}
+                            >
+                              {isSpeakingThis ? (
+                                <>
+                                  <span>⏹</span>
+                                  <span className="hidden xs:inline">Stop</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>🔊</span>
+                                  <span className="hidden xs:inline">Listen</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
+
+                        {/* SUGGESTIONS */}
+                        {!isUser && message.suggestions?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {message.suggestions.map(
+                              (suggestion, index) => (
+                                <button
+                                  key={index}
+                                  onClick={() =>
+                                    sendMessage(suggestion.text)
+                                  }
+                                  disabled={loading}
+                                  className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 text-[9px] md:text-[10px] text-indigo-700 font-medium transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                                >
+                                  {suggestion.icon} {suggestion.text}
+                                </button>
+                              )
+                            )}
+                          </div>
+                        )}
                       </div>
-                    )
-                  }
-                )}
 
+                      {/* USER ICON */}
+                      {isUser && (
+                        <div
+                          className={`flex-shrink-0 h-7 w-7 md:h-8 md:w-8 rounded-xl text-white flex items-center justify-center shadow-md transition-all text-sm ${
+                            isVoiceUser
+                              ? 'bg-gradient-to-br from-rose-500 to-orange-500'
+                              : 'bg-gradient-to-br from-indigo-500 to-purple-500'
+                          }`}
+                          title={isVoiceUser ? 'Voice message' : 'Text message'}
+                        >
+                          {isVoiceUser ? '🎤' : '👤'}
+                        </div>
+                      )}
+                    </div>
+                  )
+                }
+              )}
 
-                {/* =================================================
-                    TYPING
-                ================================================= */}
+              {/* TYPING */}
+              {loading && (
+                <div className="flex gap-2 md:gap-3 mb-3 md:mb-5 animate-fadeInUp">
+                  <div className="flex-shrink-0 h-7 w-7 md:h-8 md:w-8 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center animate-pulse shadow-md text-sm">
+                    🤖
+                  </div>
 
-                {loading && (
-                  <div
-                    className="
-                      flex
-                      gap-3
-                      mb-5
-                    "
-                  >
-
-                    <div
-                      className="
-                        h-8
-                        w-8
-                        md:h-9
-                        md:w-9
-                        rounded-xl
-                        bg-indigo-50
-                        flex
-                        items-center
-                        justify-center
-                      "
-                    >
-                      🤖
+                  <div>
+                    <div className="text-[8px] md:text-[9px] text-purple-400 mb-0.5 font-medium">
+                      🤖 Shivyog AI · Thinking
                     </div>
 
-                    <div
-                      className="
-                        bg-slate-50
-                        border
-                        border-slate-200
-                        px-5
-                        py-4
-                        rounded-2xl
-                      "
-                    >
-
+                    <div className="bg-white/70 backdrop-blur border border-indigo-100 px-3 py-2 md:px-4 md:py-3 rounded-2xl shadow-md">
                       <div className="flex gap-1.5">
-
-                        <span
-                          className="
-                            h-2
-                            w-2
-                            bg-slate-400
-                            rounded-full
-                            animate-bounce
-                          "
-                        />
-
-                        <span
-                          className="
-                            h-2
-                            w-2
-                            bg-slate-400
-                            rounded-full
-                            animate-bounce
-                          "
-                          style={{
-                            animationDelay:
-                              '150ms',
-                          }}
-                        />
-
-                        <span
-                          className="
-                            h-2
-                            w-2
-                            bg-slate-400
-                            rounded-full
-                            animate-bounce
-                          "
-                          style={{
-                            animationDelay:
-                              '300ms',
-                          }}
-                        />
-
+                        <span className="h-1.5 w-1.5 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce" />
+                        <span className="h-1.5 w-1.5 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce [animation-delay:150ms]" />
+                        <span className="h-1.5 w-1.5 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full animate-bounce [animation-delay:300ms]" />
                       </div>
-
                     </div>
-
                   </div>
-                )}
+                </div>
+              )}
 
-
-                <div
-                  ref={
-                    messagesEndRef
-                  }
-                />
-
-              </div>
-
+              <div ref={messagesEndRef} />
             </div>
-
-
-            {/* =================================================
-                INPUT
-            ================================================= */}
-
-            <div
-              className="
-                flex-shrink-0
-                border-t
-                border-slate-200
-                bg-white
-                p-2.5
-                md:p-5
-              "
-            >
-
-              <div
-                className="
-                  max-w-4xl
-                  mx-auto
-                "
-              >
-
-                {/* QUICK BUTTONS */}
-
-                <div
-                  className="
-                    flex
-                    gap-2
-                    mb-2.5
-                    overflow-x-auto
-                    pb-1
-                    scrollbar-hide
-                  "
-                >
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'shop cha timing kay ahe?'
-                      )
-                    }
-                    disabled={loading}
-                    className="
-                      flex-shrink-0
-                      px-3
-                      py-2
-                      rounded-xl
-                      bg-slate-50
-                      border
-                      text-xs
-                      hover:bg-slate-100
-                      active:scale-95
-                      disabled:opacity-50
-                    "
-                  >
-                    🕘 Timing
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'shop location kay ahe?'
-                      )
-                    }
-                    disabled={loading}
-                    className="
-                      flex-shrink-0
-                      px-3
-                      py-2
-                      rounded-xl
-                      bg-slate-50
-                      border
-                      text-xs
-                      hover:bg-slate-100
-                      active:scale-95
-                      disabled:opacity-50
-                    "
-                  >
-                    📍 Location
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'available products sang'
-                      )
-                    }
-                    disabled={loading}
-                    className="
-                      flex-shrink-0
-                      px-3
-                      py-2
-                      rounded-xl
-                      bg-slate-50
-                      border
-                      text-xs
-                      hover:bg-slate-100
-                      active:scale-95
-                      disabled:opacity-50
-                    "
-                  >
-                    🛍 Products
-                  </button>
-
-
-                  <button
-                    onClick={() =>
-                      sendMessage(
-                        'services kontya available ahet?'
-                      )
-                    }
-                    disabled={loading}
-                    className="
-                      flex-shrink-0
-                      px-3
-                      py-2
-                      rounded-xl
-                      bg-slate-50
-                      border
-                      text-xs
-                      hover:bg-slate-100
-                      active:scale-95
-                      disabled:opacity-50
-                    "
-                  >
-                    🛠 Services
-                  </button>
-
-                </div>
-
-
-                {/* LISTENING */}
-
-                {listening && (
-                  <div
-                    className="
-                      flex
-                      items-center
-                      justify-center
-                      gap-2
-                      mb-2
-                      text-xs
-                      font-semibold
-                      text-violet-600
-                    "
-                  >
-
-                    <span
-                      className="
-                        h-2
-                        w-2
-                        rounded-full
-                        bg-violet-500
-                        animate-pulse
-                      "
-                    />
-
-                    Listening... Speak now
-
-                  </div>
-                )}
-
-
-                {/* INPUT BOX */}
-
-                <div
-                  className="
-                    flex
-                    items-end
-                    gap-1.5
-                    md:gap-2
-                    bg-slate-50
-                    border
-                    border-slate-300
-                    rounded-2xl
-                    p-1.5
-                    md:p-2
-                    focus-within:border-indigo-500
-                    focus-within:ring-4
-                    focus-within:ring-indigo-100
-                  "
-                >
-
-                  <textarea
-                    value={input}
-                    onChange={(e) =>
-                      setInput(
-                        e.target.value
-                      )
-                    }
-                    onKeyDown={
-                      handleKeyDown
-                    }
-                    rows={1}
-                    disabled={loading}
-                    placeholder={
-                      listening
-                        ? 'Listening...'
-                        : 'Ask anything... LED bulb, wiring, price, service...'
-                    }
-                    className="
-                      flex-1
-                      min-w-0
-                      bg-transparent
-                      outline-none
-                      resize-none
-                      px-2
-                      md:px-3
-                      py-2.5
-                      md:py-3
-                      text-sm
-                      max-h-32
-                      disabled:opacity-50
-                    "
-                  />
-
-
-                  {/* VOICE */}
-
-                  <button
-                    onClick={
-                      startVoice
-                    }
-                    disabled={loading}
-                    className={`
-                      flex-shrink-0
-                      h-11
-                      w-11
-                      rounded-xl
-                      flex
-                      items-center
-                      justify-center
-                      text-lg
-                      transition
-                      active:scale-90
-                      ${
-                        listening
-                          ? 'bg-red-500 text-white animate-pulse'
-                          : 'bg-white border border-slate-200 hover:bg-indigo-50'
-                      }
-                      disabled:opacity-40
-                    `}
-                    title={
-                      listening
-                        ? 'Stop voice'
-                        : 'Voice input'
-                    }
-                  >
-                    {listening
-                      ? '⏹'
-                      : '🎤'}
-                  </button>
-
-
-                  {/* SEND */}
-
-                  <button
-                    onClick={() =>
-                      sendMessage()
-                    }
-                    disabled={
-                      loading ||
-                      !input.trim()
-                    }
-                    className="
-                      flex-shrink-0
-                      h-11
-                      w-11
-                      rounded-xl
-                      bg-gradient-to-r
-                      from-indigo-600
-                      to-blue-600
-                      text-white
-                      flex
-                      items-center
-                      justify-center
-                      disabled:opacity-40
-                      hover:scale-105
-                      active:scale-90
-                      transition
-                    "
-                    title="Send"
-                  >
-                    ➤
-                  </button>
-
-                </div>
-
-
-                <div
-                  className="
-                    text-center
-                    text-[9px]
-                    md:text-[10px]
-                    text-slate-400
-                    mt-1.5
-                  "
-                >
-                  Enter to send · Shift + Enter for new line · 🎤 voice बोलून थांबल्यावर automatically send होईल
-                </div>
-
-              </div>
-
-            </div>
-
           </div>
 
+          {/* =================================================
+              INPUT - FIXED BOTTOM
+          ================================================= */}
+          <div className="flex-shrink-0 border-t border-indigo-100 bg-white/80 backdrop-blur p-2 md:p-3">
+            <div className="max-w-4xl mx-auto">
+              {/* QUICK BUTTONS */}
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                <button
+                  onClick={() => sendMessage('shop cha timing kay ahe?')}
+                  disabled={loading}
+                  className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[8px] md:text-[10px] font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                >
+                  🕘 Timing
+                </button>
+
+                <button
+                  onClick={() => sendMessage('shop location kay ahe?')}
+                  disabled={loading}
+                  className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[8px] md:text-[10px] font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                >
+                  📍 Location
+                </button>
+
+                <button
+                  onClick={() => sendMessage('available products sang')}
+                  disabled={loading}
+                  className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[8px] md:text-[10px] font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                >
+                  🛍 Products
+                </button>
+
+                <button
+                  onClick={() => sendMessage('services kontya available ahet?')}
+                  disabled={loading}
+                  className="px-2 py-1 md:px-2.5 md:py-1.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 text-[8px] md:text-[10px] font-medium text-indigo-700 hover:from-indigo-100 hover:to-purple-100 transition-all duration-300 disabled:opacity-50 hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap"
+                >
+                  🛠 Services
+                </button>
+              </div>
+
+              {/* INPUT BOX */}
+              <div
+                className={`flex items-end gap-1.5 bg-white border-2 rounded-2xl p-1 md:p-1.5 transition-all duration-300 ${
+                  listening
+                    ? 'border-rose-400 shadow-lg shadow-rose-100'
+                    : 'border-indigo-200 focus-within:border-indigo-400 focus-within:shadow-lg focus-within:shadow-indigo-100'
+                }`}
+              >
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  placeholder={
+                    listening
+                      ? '🎤 Bolat raha...'
+                      : 'Ask anything...'
+                  }
+                  className="flex-1 bg-transparent outline-none resize-none px-2 py-1.5 md:px-3 md:py-2 text-xs md:text-sm max-h-24 placeholder:text-slate-400 min-h-[36px]"
+                />
+
+                {/* VOICE INPUT */}
+                <button
+                  onClick={startVoice}
+                  disabled={loading}
+                  className={`relative h-8 w-8 md:h-10 md:w-10 rounded-xl flex items-center justify-center text-sm md:text-base transition-all duration-300 flex-shrink-0 ${
+                    listening
+                      ? 'bg-gradient-to-br from-rose-500 to-red-500 text-white shadow-lg shadow-rose-200 scale-105'
+                      : 'bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-600 hover:from-indigo-200 hover:to-purple-200 hover:scale-105 hover:shadow-md'
+                  } disabled:opacity-40`}
+                  title={listening ? 'Stop voice' : 'Speak to AI'}
+                >
+                  {listening ? (
+                    <>
+                      <span className="absolute inset-0 rounded-xl animate-ping bg-rose-400 opacity-30" />
+                      <span className="relative">⏹</span>
+                    </>
+                  ) : (
+                    '🎤'
+                  )}
+                </button>
+
+                {/* SEND */}
+                <button
+                  onClick={() => sendMessage()}
+                  disabled={loading || !input.trim()}
+                  className="h-8 w-8 md:h-10 md:w-10 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center disabled:opacity-40 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md hover:shadow-lg text-sm md:text-base flex-shrink-0"
+                  title="Send text"
+                >
+                  ➤
+                </button>
+              </div>
+
+              {/* STATUS */}
+              <div className="text-center text-[7px] md:text-[9px] text-slate-400 mt-1 font-medium min-h-[16px]">
+                {listening ? (
+                  <span className="text-rose-500 font-semibold animate-pulse">
+                    🎤 Listening... बोलून थांबा — auto send
+                  </span>
+                ) : speaking ? (
+                  <span className="text-indigo-500 font-semibold animate-pulse">
+                    🗣️ Shivyog AI बोलत आहे...
+                  </span>
+                ) : (
+                  <span className="text-slate-400">
+                    ⏎ Enter · 🎤 Voice = Auto Send + Speak
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-
-      </section>
-
+      </div>
 
       {/* =====================================================
-          MOBILE CONTACT BAR
+          MOBILE CONTACT BAR - FIXED BOTTOM
       ===================================================== */}
-
-      <div
-        className="
-          md:hidden
-          flex-shrink-0
-          z-40
-          grid
-          grid-cols-3
-          bg-white
-          border-t
-          shadow-xl
-        "
-      >
-
+      <div className="md:hidden flex-shrink-0 grid grid-cols-3 bg-white/90 backdrop-blur border-t border-indigo-100 shadow-xl">
         <a
-          href={waLink(
-            WA_MESSAGES.general
-          )}
+          href={waLink(WA_MESSAGES.general)}
           target="_blank"
           rel="noopener noreferrer"
-          className="
-            py-2.5
-            text-center
-            text-xs
-            font-semibold
-            text-green-600
-            active:bg-green-50
-          "
+          className="py-2 text-center text-[10px] font-semibold text-green-600 hover:bg-green-50 transition-colors duration-300"
         >
           💬 WhatsApp
         </a>
 
-
         <a
-          href={telLink(
-            PHONE_NUMBERS[0]
-          )}
-          className="
-            py-2.5
-            text-center
-            text-xs
-            font-semibold
-            text-blue-600
-            border-x
-            active:bg-blue-50
-          "
+          href={telLink(PHONE_NUMBERS[0])}
+          className="py-2 text-center text-[10px] font-semibold text-blue-600 border-x border-indigo-100 hover:bg-indigo-50 transition-colors duration-300"
         >
           📞 Call
         </a>
-
 
         <a
           href={MAPS_LINK}
           target="_blank"
           rel="noopener noreferrer"
-          className="
-            py-2.5
-            text-center
-            text-xs
-            font-semibold
-            text-red-500
-            active:bg-red-50
-          "
+          className="py-2 text-center text-[10px] font-semibold text-red-500 hover:bg-red-50 transition-colors duration-300"
         >
           🗺️ Directions
         </a>
-
       </div>
 
-
       {/* =====================================================
-          GLOBAL MOBILE SCROLL FIX
+          ANIMATIONS
       ===================================================== */}
-
       <style>{`
-        html,
-        body,
-        #root {
-          max-width: 100%;
+        @keyframes gradient-xy {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        
+        .animate-gradient-xy {
+          animation: gradient-xy 5s ease infinite;
         }
 
-        html,
-        body {
-          overscroll-behavior: none;
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
-        * {
-          -webkit-tap-highlight-color: transparent;
+        .animate-fadeInUp {
+          animation: fadeInUp 0.3s ease-out forwards;
         }
 
-        /* Hide horizontal scrollbar */
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        /* Scrollbar styling */
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 4px;
         }
 
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-
-        /* Chat scrollbar */
-        ::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
+        .scrollbar-thin::-webkit-scrollbar-track {
           background: transparent;
         }
 
-        ::-webkit-scrollbar-thumb {
-          border-radius: 999px;
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: linear-gradient(to bottom, #818cf8, #a78bfa);
+          border-radius: 9999px;
         }
 
-        /* Mobile */
-        @media (max-width: 767px) {
-          textarea {
-            font-size: 16px !important;
-          }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(to bottom, #6366f1, #8b5cf6);
+        }
 
-          body {
-            overflow: hidden !important;
+        /* Hide scrollbar on Firefox */
+        .scrollbar-thin {
+          scrollbar-width: thin;
+          scrollbar-color: #a78bfa transparent;
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 400px) {
+          .xs\\:inline {
+            display: none !important;
           }
         }
       `}</style>
-
     </div>
   )
 }
