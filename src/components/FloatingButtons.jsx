@@ -252,7 +252,7 @@ export default function FloatingButtons() {
 
                 <div>
                   <div className="font-bold text-slate-800 text-sm">
-                    Shivyog Electronics
+                    Shivyog Electrical
                   </div>
 
                   <div className="text-xs text-slate-500">
@@ -271,7 +271,7 @@ export default function FloatingButtons() {
           <button
             onClick={openBot}
             aria-label="Open Shivyog AI Assistant"
-            title="Shivyog Electronics AI Assistant"
+            title="Shivyog Electrical AI Assistant"
             className={`
               relative
               h-16 w-16
@@ -343,7 +343,7 @@ export default function FloatingButtons() {
 
                 <div>
                   <div className="font-bold text-slate-800 text-xs">
-                    Shivyog Electronics
+                    Shivyog Electrical
                   </div>
 
                   <div className="text-[10px] text-slate-500">
@@ -360,7 +360,7 @@ export default function FloatingButtons() {
           <button
             onClick={openBot}
             aria-label="Open Shivyog AI Assistant"
-            title="Shivyog Electronics AI Assistant"
+            title="Shivyog Electrical AI Assistant"
             className={`
               relative
               h-16 w-16
