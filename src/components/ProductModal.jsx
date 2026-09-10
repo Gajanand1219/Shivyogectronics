@@ -111,10 +111,6 @@
 
 
 
-
-
-
-
 import { useEffect } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { waLink, WA_MESSAGES } from '../utils/contact'
@@ -122,14 +118,14 @@ import { waLink, WA_MESSAGES } from '../utils/contact'
 export default function ProductModal({ product, onClose }) {
   const { t, pick } = useLanguage()
 
-  // 🔒 Lock body scroll while modal open
+  // 🔒 Lock body scroll
   useEffect(() => {
     const original = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = original }
   }, [])
 
-  // ⌨️ ESC key closes
+  // ⌨️ ESC closes
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
@@ -143,27 +139,26 @@ export default function ProductModal({ product, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[90] bg-navy-900/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
+      className="fixed inset-0 z-[200] bg-navy-900/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn"
       role="dialog"
       aria-modal="true"
       onClick={onClose}
     >
-      {/* ═══════ THE CARD ═══════ */}
       <div
         className="
           relative w-full sm:max-w-lg bg-white
           rounded-t-3xl sm:rounded-2xl
           shadow-2xl overflow-hidden
-          max-h-[92vh] sm:max-h-[90vh]
+          max-h-[88vh] sm:max-h-[90vh]
           flex flex-col
           animate-slideUp
         "
         onClick={(e) => e.stopPropagation()}
       >
 
-        {/* ───── IMAGE HEADER ───── */}
+        {/* ───── IMAGE HEADER (FULL COVER) ───── */}
         <div className="relative shrink-0">
-          <div className="h-52 sm:h-64 bg-gradient-to-br from-navy-50 to-royal-50 flex items-center justify-center overflow-hidden">
+          <div className="h-56 sm:h-64 bg-gradient-to-br from-navy-50 to-royal-50 flex items-center justify-center overflow-hidden">
             {product.image ? (
               <img
                 src={product.image}
@@ -172,21 +167,21 @@ export default function ProductModal({ product, onClose }) {
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span className="text-7xl">{product.icon || '🛍️'}</span>
+              <span className="text-8xl">{product.icon || '🛍️'}</span>
             )}
           </div>
 
-          {/* Soft fade at bottom of image */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/25 to-transparent" />
+          {/* bottom fade */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
 
-          {/* Drag handle (mobile) */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-white/75 sm:hidden" />
+          {/* drag handle */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-white/80 sm:hidden" />
 
-          {/* Close button */}
+          {/* close button */}
           <button
             onClick={onClose}
             aria-label={t('modal_close')}
-            className="absolute top-3 right-3 h-9 w-9 rounded-full bg-white/95 text-navy-700 text-xl leading-none flex items-center justify-center shadow-md hover:bg-white active:scale-95 transition"
+            className="absolute top-3 right-3 h-10 w-10 rounded-full bg-white/95 text-navy-700 text-2xl leading-none flex items-center justify-center shadow-lg active:scale-90 transition"
           >
             ×
           </button>
@@ -195,12 +190,12 @@ export default function ProductModal({ product, onClose }) {
         {/* ───── SCROLLABLE BODY ───── */}
         <div className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 pb-24 sm:pb-6">
 
-          {/* CATEGORY ····· PRICE */}
+          {/* CATEGORY  ·····  PRICE */}
           <div className="flex items-start justify-between gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-royal-500 pt-1">
               {product.category}
             </span>
-            <span className="text-lg font-bold text-navy-700 whitespace-nowrap">
+            <span className="text-xl font-bold text-navy-700 whitespace-nowrap">
               {product.price ? `₹${product.price}` : t('products_price_na')}
             </span>
           </div>
@@ -210,7 +205,7 @@ export default function ProductModal({ product, onClose }) {
             {name}
           </h3>
 
-          {/* STOCK BADGE + FLOATING CALL BUTTON */}
+          {/* STOCK BADGE + FLOATING CALL */}
           <div className="mt-3 flex items-center justify-between gap-3">
             <span
               className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -222,7 +217,7 @@ export default function ProductModal({ product, onClose }) {
               {product.available ? t('products_available') : t('products_on_request')}
             </span>
 
-            {/* Floating Call button — mobile only */}
+            {/* Floating Call button (mobile) */}
             <a
               href="tel:+919552884781"
               aria-label="Call"
@@ -232,19 +227,41 @@ export default function ProductModal({ product, onClose }) {
             </a>
           </div>
 
-          {/* DESCRIPTION */}
+          {/* DESCRIPTION with floating WhatsApp pill inside */}
           {desc && (
-            <div className="mt-5">
+            <div className="mt-5 relative">
               <p className="text-xs font-semibold uppercase tracking-wide text-navy-400 mb-1">
                 {t('modal_description')}
               </p>
-              <p className="text-sm text-navy-500 font-marathi leading-relaxed">
+
+              <p className="text-sm text-navy-500 font-marathi leading-relaxed pr-2">
                 {desc}
               </p>
+
+              {/* WhatsApp floating pill — mobile only, inside description block */}
+              <div className="sm:hidden mt-6 flex justify-end">
+                <a
+                  href={waLink(WA_MESSAGES.product(name))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    inline-flex items-center gap-2
+                    rounded-full
+                    bg-green-500 text-white
+                    font-bold text-sm
+                    px-5 py-2.5
+                    shadow-lg shadow-green-500/30
+                    active:scale-95 transition
+                  "
+                >
+                  <i className="fa fa-whatsapp text-lg" />
+                  {t('products_wa_enquiry')}
+                </a>
+              </div>
             </div>
           )}
 
-          {/* DESKTOP WhatsApp button */}
+          {/* DESKTOP WhatsApp (full width) */}
           <a
             href={waLink(WA_MESSAGES.product(name))}
             target="_blank"
@@ -256,19 +273,7 @@ export default function ProductModal({ product, onClose }) {
           </a>
         </div>
 
-        {/* ───── STICKY WHATSAPP BAR (mobile) ───── */}
-        <div className="sm:hidden absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-navy-100 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-          <a
-            href={waLink(WA_MESSAGES.product(name))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-green-500 text-white font-bold shadow-md active:scale-[0.98] transition"
-          >
-            <i className="fa fa-whatsapp text-xl" />
-            {t('products_wa_enquiry')}
-          </a>
-        </div>
-
+        {/* ❌ REMOVED sticky bottom bar — no longer overlaps navbar buttons */}
       </div>
     </div>
   )
