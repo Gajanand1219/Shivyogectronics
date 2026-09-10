@@ -107,6 +107,14 @@
 // }
 
 
+
+
+
+
+
+
+
+
 import { useEffect } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { waLink, WA_MESSAGES } from '../utils/contact'
@@ -114,14 +122,14 @@ import { waLink, WA_MESSAGES } from '../utils/contact'
 export default function ProductModal({ product, onClose }) {
   const { t, pick } = useLanguage()
 
-  // Lock body scroll while open
+  // 🔒 Lock body scroll while modal open
   useEffect(() => {
     const original = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = original }
   }, [])
 
-  // ESC to close
+  // ⌨️ ESC key closes
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
@@ -140,6 +148,7 @@ export default function ProductModal({ product, onClose }) {
       aria-modal="true"
       onClick={onClose}
     >
+      {/* ═══════ THE CARD ═══════ */}
       <div
         className="
           relative w-full sm:max-w-lg bg-white
@@ -151,9 +160,10 @@ export default function ProductModal({ product, onClose }) {
         "
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ═════ IMAGE HEADER ═════ */}
+
+        {/* ───── IMAGE HEADER ───── */}
         <div className="relative shrink-0">
-          <div className="h-56 sm:h-64 bg-gradient-to-br from-navy-50 to-royal-50 flex items-center justify-center overflow-hidden">
+          <div className="h-52 sm:h-64 bg-gradient-to-br from-navy-50 to-royal-50 flex items-center justify-center overflow-hidden">
             {product.image ? (
               <img
                 src={product.image}
@@ -166,11 +176,11 @@ export default function ProductModal({ product, onClose }) {
             )}
           </div>
 
-          {/* Bottom fade over image */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/20 to-transparent" />
+          {/* Soft fade at bottom of image */}
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/25 to-transparent" />
 
-          {/* Drag handle (mobile only) */}
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-white/70 sm:hidden" />
+          {/* Drag handle (mobile) */}
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-white/75 sm:hidden" />
 
           {/* Close button */}
           <button
@@ -182,10 +192,10 @@ export default function ProductModal({ product, onClose }) {
           </button>
         </div>
 
-        {/* ═════ SCROLLABLE BODY ═════ */}
+        {/* ───── SCROLLABLE BODY ───── */}
         <div className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 pb-24 sm:pb-6">
 
-          {/* CATEGORY  ·····  PRICE */}
+          {/* CATEGORY ····· PRICE */}
           <div className="flex items-start justify-between gap-3">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-royal-500 pt-1">
               {product.category}
@@ -200,7 +210,7 @@ export default function ProductModal({ product, onClose }) {
             {name}
           </h3>
 
-          {/* AVAILABILITY + FLOATING CALL */}
+          {/* STOCK BADGE + FLOATING CALL BUTTON */}
           <div className="mt-3 flex items-center justify-between gap-3">
             <span
               className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -212,7 +222,7 @@ export default function ProductModal({ product, onClose }) {
               {product.available ? t('products_available') : t('products_on_request')}
             </span>
 
-            {/* Floating Call button (mobile only) */}
+            {/* Floating Call button — mobile only */}
             <a
               href="tel:+919552884781"
               aria-label="Call"
@@ -234,7 +244,7 @@ export default function ProductModal({ product, onClose }) {
             </div>
           )}
 
-          {/* DESKTOP WhatsApp button (mobile uses sticky bar below) */}
+          {/* DESKTOP WhatsApp button */}
           <a
             href={waLink(WA_MESSAGES.product(name))}
             target="_blank"
@@ -246,7 +256,7 @@ export default function ProductModal({ product, onClose }) {
           </a>
         </div>
 
-        {/* ═════ STICKY MOBILE WHATSAPP BAR ═════ */}
+        {/* ───── STICKY WHATSAPP BAR (mobile) ───── */}
         <div className="sm:hidden absolute bottom-0 inset-x-0 bg-white/95 backdrop-blur border-t border-navy-100 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
           <a
             href={waLink(WA_MESSAGES.product(name))}
