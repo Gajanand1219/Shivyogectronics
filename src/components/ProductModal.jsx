@@ -111,6 +111,16 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
 import { useEffect } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { waLink, WA_MESSAGES } from '../utils/contact'
@@ -164,7 +174,7 @@ export default function ProductModal({ product, onClose }) {
                 src={product.image}
                 alt={name}
                 loading="lazy"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
               />
             ) : (
               <span className="text-8xl">{product.icon || '🛍️'}</span>
@@ -174,7 +184,7 @@ export default function ProductModal({ product, onClose }) {
           {/* bottom fade */}
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
 
-          {/* drag handle */}
+          {/* drag handle (mobile) */}
           <div className="absolute top-2 left-1/2 -translate-x-1/2 h-1.5 w-12 rounded-full bg-white/80 sm:hidden" />
 
           {/* close button */}
@@ -205,7 +215,7 @@ export default function ProductModal({ product, onClose }) {
             {name}
           </h3>
 
-          {/* STOCK BADGE + FLOATING CALL */}
+          {/* STOCK BADGE + ANIMATED CALL BUTTON */}
           <div className="mt-3 flex items-center justify-between gap-3">
             <span
               className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -217,49 +227,75 @@ export default function ProductModal({ product, onClose }) {
               {product.available ? t('products_available') : t('products_on_request')}
             </span>
 
-            {/* Floating Call button (mobile) */}
+            {/* ✨ ANIMATED CALL BUTTON (mobile) */}
             <a
               href="tel:+919552884781"
               aria-label="Call"
-              className="sm:hidden h-11 w-11 shrink-0 rounded-full bg-royal-500 text-white flex items-center justify-center shadow-lg ring-4 ring-royal-500/15 active:scale-95 transition"
+              className="
+                sm:hidden
+                relative
+                h-12 w-12 shrink-0
+                rounded-full
+                bg-royal-500 text-white
+                flex items-center justify-center
+                shadow-lg shadow-royal-500/40
+                active:scale-90
+                transition
+                animate-callRing
+              "
             >
-              <i className="fa fa-phone text-base" />
+              {/* pulse ring 1 */}
+              <span className="absolute inset-0 rounded-full bg-royal-500/50 animate-callPulse" />
+              {/* pulse ring 2 (delayed) */}
+              <span
+                className="absolute inset-0 rounded-full bg-royal-500/40 animate-callPulse"
+                style={{ animationDelay: '0.6s' }}
+              />
+              {/* phone icon */}
+              <i className="fa fa-phone text-base relative z-10 animate-callShake" />
             </a>
           </div>
 
-          {/* DESCRIPTION with floating WhatsApp pill inside */}
+          {/* DESCRIPTION */}
           {desc && (
-            <div className="mt-5 relative">
+            <div className="mt-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-navy-400 mb-1">
                 {t('modal_description')}
               </p>
-
-              <p className="text-sm text-navy-500 font-marathi leading-relaxed pr-2">
+              <p className="text-sm text-navy-500 font-marathi leading-relaxed">
                 {desc}
               </p>
-
-              {/* WhatsApp floating pill — mobile only, inside description block */}
-              <div className="sm:hidden mt-6 flex justify-end">
-                <a
-                  href={waLink(WA_MESSAGES.product(name))}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="
-                    inline-flex items-center gap-2
-                    rounded-full
-                    bg-green-500 text-white
-                    font-bold text-sm
-                    px-5 py-2.5
-                    shadow-lg shadow-green-500/30
-                    active:scale-95 transition
-                  "
-                >
-                  <i className="fa fa-whatsapp text-lg" />
-                  {t('products_wa_enquiry')}
-                </a>
-              </div>
             </div>
           )}
+
+          {/* ✨ ANIMATED WhatsApp BUTTON — mobile (inside card) */}
+          <div className="sm:hidden mt-6 flex justify-end">
+            <a
+              href={waLink(WA_MESSAGES.product(name))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="
+                relative
+                inline-flex items-center gap-2
+                rounded-full
+                bg-green-500 text-white
+                font-bold text-sm
+                px-5 py-3
+                shadow-lg shadow-green-500/40
+                active:scale-95
+                transition
+                animate-waGlow
+              "
+            >
+              {/* shine sweep */}
+              <span className="pointer-events-none absolute inset-0 rounded-full overflow-hidden">
+                <span className="absolute -inset-y-2 -left-1/3 w-1/3 bg-white/30 blur-md animate-waShine" />
+              </span>
+
+              <i className="fa fa-whatsapp text-xl relative z-10" />
+              <span className="relative z-10">{t('products_wa_enquiry')}</span>
+            </a>
+          </div>
 
           {/* DESKTOP WhatsApp (full width) */}
           <a
@@ -273,7 +309,7 @@ export default function ProductModal({ product, onClose }) {
           </a>
         </div>
 
-        {/* ❌ REMOVED sticky bottom bar — no longer overlaps navbar buttons */}
+        {/* ❌ No sticky bar → no overlap with navbar buttons */}
       </div>
     </div>
   )
