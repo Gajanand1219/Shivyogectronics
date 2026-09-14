@@ -120,7 +120,7 @@ export default function Navbar() {
 
           <span className="hidden sm:flex flex-col leading-tight">
             <span className="font-display font-bold text-navy text-sm md:text-base">
-              शिवयोगा इलेक्ट्रिकल
+              शिवयोग इलेक्ट्रिकल
             </span>
 
             <span className="text-[11px] md:text-xs text-royal-500 font-semibold">
