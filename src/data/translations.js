@@ -88,7 +88,7 @@ export const translations = {
 
   // Why choose us
   why_eyebrow: { mr: 'का निवडावे', en: 'Why Choose Us' },
-  why_title: { mr: 'शिवयोगा इलेक्ट्रिकल & इलेक्ट्रॉनिक्स का निवडावे?', en: 'Why choose Shivyog Electrical & Electronics?' },
+  why_title: { mr: 'शिवयोग इलेक्ट्रिकल & इलेक्ट्रॉनिक्स का निवडावे?', en: 'Why choose Shivyog Electrical & Electronics?' },
 
   // Tips
   tips_eyebrow: { mr: 'Electrical Tips', en: 'Electrical Tips' },
@@ -104,9 +104,9 @@ export const translations = {
 
   // About
   about_eyebrow: { mr: 'आमच्याबद्दल', en: 'About Us' },
-  about_title: { mr: 'शिवयोगा इलेक्ट्रिकल & इलेक्ट्रॉनिक्स', en: 'Shivyog Electrical & Electronics' },
+  about_title: { mr: 'शिवयोग इलेक्ट्रिकल & इलेक्ट्रॉनिक्स', en: 'Shivyog Electrical & Electronics' },
   about_p1: {
-    mr: 'शिवयोगा इलेक्ट्रिकल & इलेक्ट्रॉनिक्स हे वसमत येथील ग्राहकांसाठी इलेक्ट्रिकल आणि इलेक्ट्रॉनिक्स साहित्य, उपकरणे आणि संबंधित सेवांसाठी विश्वासार्ह ठिकाण आहे.',
+    mr: 'शिवयोग इलेक्ट्रिकल & इलेक्ट्रॉनिक्स हे वसमत येथील ग्राहकांसाठी इलेक्ट्रिकल आणि इलेक्ट्रॉनिक्स साहित्य, उपकरणे आणि संबंधित सेवांसाठी विश्वासार्ह ठिकाण आहे.',
     en: 'Shivyog Electrical & Electronics is a trusted destination in Vasmat for electrical and electronics material, equipment and related services.',
   },
   about_p2: {
